@@ -14,7 +14,9 @@
     "totalExpenses": "Total Expenses",
     "categories": "Categories",
     "recentExpenses": "Recent Expenses",
-    "noExpenses": "No expenses added yet"
+    "noExpenses": "No expenses added yet",
+    "yourSpending": "Your Spending",
+    "memberContribution": "Member Contributions"
   },
 
   "expenses": {
@@ -29,7 +31,20 @@
     "note": "Note",
     "notFound": "Expense not found",
     "deleteConfirm": "Delete this expense?",
-    "noExpenses": "No expenses added yet"
+    "noExpenses": "No expenses added yet",
+    "spentBy": "Spent by",
+    "addTitle": "Add Expense",
+    "addSubtitle": "Create a new expense",
+    "amount": "Amount",
+    "enterAmount": "Enter amount",
+    "selectCategory": "Select Category",
+    "optionalNote": "Optional note",
+    "saveExpense": "Save Expense",
+    "saving": "Saving...",
+    "expenseAdded": "Expense added successfully",
+    "userNotFound": "User not found",
+    "expenseFailed": "Failed to add expense",
+    "somethingWrong": "Something went wrong"
   },
 
   "reports": {

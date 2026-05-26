@@ -17,12 +17,23 @@ const supabase = createClient();
 type Expense = {
   id: string;
   amount: number;
-  note: string;
+  note: string | null;
   expense_date: string;
+  created_by: string;
+  category_id: string;
 
-  expense_categories: {
-    name: string;
-  } | null;
+  spenderName?: string;
+  categoryName?: string;
+};
+
+type User = {
+  id: string;
+  full_name: string;
+};
+
+type Category = {
+  id: string;
+  name: string;
 };
 
 export default function ExpensesPage() {
@@ -38,7 +49,8 @@ export default function ExpensesPage() {
 
   async function loadExpenses() {
     try {
-      const { data, error } = await supabase
+      // Load expenses
+      const { data: expenseData, error: expenseError } = await supabase
         .from("expenses")
         .select(
           `
@@ -46,24 +58,70 @@ export default function ExpensesPage() {
           amount,
           note,
           expense_date,
-          expense_categories (
-            name
-          )
+          created_by,
+          category_id
         `
         )
         .eq("is_deleted", false)
-        .order("expense_date", {
+        .order("created_at", {
           ascending: false,
         });
 
-      if (error) {
-        console.error(error);
+      if (expenseError) {
+        console.error(expenseError);
         return;
       }
 
-      if (data) {
-        setExpenses(data);
+      // Load users
+      const { data: usersData, error: usersError } = await supabase.from(
+        "users"
+      ).select(`
+          id,
+          full_name
+        `);
+
+      if (usersError) {
+        console.error(usersError);
+        return;
       }
+
+      // Load categories
+      const { data: categoriesData, error: categoriesError } =
+        await supabase.from("expense_categories").select(`
+          id,
+          name
+        `);
+
+      if (categoriesError) {
+        console.error(categoriesError);
+        return;
+      }
+
+      // Create user map
+      const userMap: Record<string, string> = {};
+
+      (usersData as User[])?.forEach((user) => {
+        userMap[user.id] = user.full_name;
+      });
+
+      // Create category map
+      const categoryMap: Record<string, string> = {};
+
+      (categoriesData as Category[])?.forEach((category) => {
+        categoryMap[category.id] = category.name;
+      });
+
+      // Merge all data
+      const formattedExpenses =
+        (expenseData as Expense[])?.map((expense) => ({
+          ...expense,
+
+          spenderName: userMap[expense.created_by] || "-",
+
+          categoryName: categoryMap[expense.category_id] || "-",
+        })) || [];
+
+      setExpenses(formattedExpenses);
     } catch (error) {
       console.error(error);
     } finally {
@@ -76,7 +134,7 @@ export default function ExpensesPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-28">
       <PageHeader
         title={messages.expenses.title}
         subtitle={messages.expenses.subtitle}
@@ -92,22 +150,42 @@ export default function ExpensesPage() {
             <Link
               key={expense.id}
               href={`/expenses/${expense.id}`}
-              className="block rounded-3xl border bg-white p-4 shadow-sm transition active:scale-[0.98]"
+              className="block rounded-3xl border bg-white p-5 shadow-sm transition active:scale-[0.98]"
             >
-              <div className="flex items-start justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold">৳ {expense.amount}</h2>
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  {/* Amount */}
+                  <h2 className="text-3xl font-bold text-black">
+                    ৳ {expense.amount}
+                  </h2>
 
-                  <p className="mt-1 text-gray-600">
-                    {expense.expense_categories?.name || "-"}
+                  {/* Category */}
+                  <p className="mt-2 text-base text-gray-700">
+                    {expense.categoryName}
                   </p>
 
+                  {/* Spender */}
+                  <p className="mt-3 text-sm text-gray-500">
+                    {messages.expenses.spentBy}:{" "}
+                    <span className="font-medium text-gray-700">
+                      {expense.spenderName}
+                    </span>
+                  </p>
+
+                  {/* Note */}
                   {expense.note && (
-                    <p className="mt-3 text-sm text-gray-500">{expense.note}</p>
+                    <p className="mt-3 line-clamp-2 text-sm text-gray-500">
+                      {expense.note}
+                    </p>
                   )}
                 </div>
 
-                <p className="text-sm text-gray-400">{expense.expense_date}</p>
+                {/* Date */}
+                <div className="shrink-0">
+                  <p className="text-sm text-gray-400">
+                    {new Date(expense.expense_date).toLocaleDateString()}
+                  </p>
+                </div>
               </div>
             </Link>
           ))
@@ -117,7 +195,7 @@ export default function ExpensesPage() {
       {/* Floating Add Button */}
       <Link
         href="/expenses/add"
-        className="fixed right-4 bottom-24 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-lg transition active:scale-95"
+        className="fixed right-4 bottom-24 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-black text-white shadow-xl transition active:scale-95"
       >
         <Plus size={26} />
       </Link>

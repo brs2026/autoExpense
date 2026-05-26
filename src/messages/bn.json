@@ -14,7 +14,9 @@
     "totalExpenses": "মোট খরচ",
     "categories": "ক্যাটাগরি",
     "recentExpenses": "সাম্প্রতিক খরচ",
-    "noExpenses": "এখনো কোনো খরচ যোগ করা হয়নি"
+    "noExpenses": "এখনো কোনো খরচ যোগ করা হয়নি",
+    "yourSpending": "আপনার খরচ",
+    "memberContribution": "সদস্যদের খরচ"
   },
 
   "expenses": {
@@ -29,7 +31,20 @@
     "note": "নোট",
     "notFound": "খরচ পাওয়া যায়নি",
     "deleteConfirm": "এই খরচ মুছে ফেলবেন?",
-    "noExpenses": "এখনো কোনো খরচ যোগ করা হয়নি"
+    "noExpenses": "এখনো কোনো খরচ যোগ করা হয়নি",
+    "spentBy": "খরচ করেছেন",
+    "addTitle": "খরচ যোগ করুন",
+    "addSubtitle": "নতুন খরচ তৈরি করুন",
+    "amount": "পরিমাণ",
+    "enterAmount": "টাকার পরিমাণ লিখুন",
+    "selectCategory": "ক্যাটাগরি নির্বাচন করুন",
+    "optionalNote": "ঐচ্ছিক নোট লিখুন",
+    "saveExpense": "খরচ সেভ করুন",
+    "saving": "সেভ হচ্ছে...",
+    "expenseAdded": "খরচ সফলভাবে যোগ হয়েছে",
+    "userNotFound": "ব্যবহারকারী পাওয়া যায়নি",
+    "expenseFailed": "খরচ যোগ করা যায়নি",
+    "somethingWrong": "কিছু সমস্যা হয়েছে"
   },
 
   "reports": {

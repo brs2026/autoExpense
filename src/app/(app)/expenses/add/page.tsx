@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+
 import { createClient } from "@/lib/supabase/browser-client";
+
 import PageHeader from "@/components/layout/page-header";
+
+import { useLanguage } from "@/context/language-context";
 
 const supabase = createClient();
 
@@ -17,25 +20,29 @@ type Category = {
 export default function AddExpensePage() {
   const router = useRouter();
 
+  const { messages } = useLanguage();
+
   const [categories, setCategories] = useState<Category[]>([]);
 
   const [amount, setAmount] = useState("");
+
   const [categoryId, setCategoryId] = useState("");
+
   const [note, setNote] = useState("");
 
   const [loading, setLoading] = useState(false);
 
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState<
-    "success" | "error" | ""
-  >("");
+
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
   useEffect(() => {
     async function loadCategories() {
       const { data, error } = await supabase
         .from("expense_categories")
         .select("id, name")
-        .eq("is_active", true);
+        .eq("is_active", true)
+        .order("name");
 
       if (!error && data) {
         setCategories(data);
@@ -50,6 +57,7 @@ export default function AddExpensePage() {
       setLoading(true);
 
       setMessage("");
+
       setMessageType("");
 
       const {
@@ -57,37 +65,43 @@ export default function AddExpensePage() {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        setMessage("User not found");
+        setMessage(messages.expenses.userNotFound);
+
         setMessageType("error");
+
         return;
       }
 
-      const { error } = await supabase
-        .from("expenses")
-        .insert({
-          amount: Number(amount),
-          category_id: categoryId,
-          note,
-          expense_date: new Date()
-            .toISOString()
-            .split("T")[0],
-          created_by: user.id,
-        });
+      const { error } = await supabase.from("expenses").insert({
+        amount: Number(amount),
+
+        category_id: categoryId,
+
+        note,
+
+        expense_date: new Date().toISOString().split("T")[0],
+
+        created_by: user.id,
+      });
 
       if (error) {
         console.log(error);
 
-        setMessage(error.message);
+        setMessage(messages.expenses.expenseFailed);
+
         setMessageType("error");
 
         return;
       }
 
-      setMessage("Expense added successfully");
+      setMessage(messages.expenses.expenseAdded);
+
       setMessageType("success");
 
       setAmount("");
+
       setCategoryId("");
+
       setNote("");
 
       setTimeout(() => {
@@ -96,7 +110,8 @@ export default function AddExpensePage() {
     } catch (err) {
       console.log(err);
 
-      setMessage("Something went wrong");
+      setMessage(messages.expenses.somethingWrong);
+
       setMessageType("error");
     } finally {
       setLoading(false);
@@ -104,13 +119,13 @@ export default function AddExpensePage() {
   }
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 p-4 pb-28">
       {/* Header */}
       <PageHeader
-  title="Add Expense"
-  subtitle="Create a new expense"
-  backHref="/expenses"
-/>
+        title={messages.expenses.addTitle}
+        subtitle={messages.expenses.addSubtitle}
+        backHref="/expenses"
+      />
 
       {/* Message */}
       {message && (
@@ -126,46 +141,37 @@ export default function AddExpensePage() {
       )}
 
       {/* Form */}
-      <div className="space-y-4 rounded-3xl border bg-white p-4 shadow-sm">
+      <div className="space-y-5 rounded-3xl border bg-white p-5 shadow-sm">
         {/* Amount */}
         <div>
           <label className="mb-2 block text-sm font-medium">
-            Amount
+            {messages.expenses.amount}
           </label>
 
           <input
             type="number"
-            placeholder="Enter amount"
-            className="w-full rounded-2xl border p-4 outline-none"
+            placeholder={messages.expenses.enterAmount}
+            className="w-full rounded-2xl border p-4 transition outline-none focus:border-black"
             value={amount}
-            onChange={(e) =>
-              setAmount(e.target.value)
-            }
+            onChange={(e) => setAmount(e.target.value)}
           />
         </div>
 
         {/* Category */}
         <div>
           <label className="mb-2 block text-sm font-medium">
-            Category
+            {messages.expenses.category}
           </label>
 
           <select
-            className="w-full rounded-2xl border p-4 outline-none"
+            className="w-full rounded-2xl border p-4 transition outline-none focus:border-black"
             value={categoryId}
-            onChange={(e) =>
-              setCategoryId(e.target.value)
-            }
+            onChange={(e) => setCategoryId(e.target.value)}
           >
-            <option value="">
-              Select Category
-            </option>
+            <option value="">{messages.expenses.selectCategory}</option>
 
             {categories.map((category) => (
-              <option
-                key={category.id}
-                value={category.id}
-              >
+              <option key={category.id} value={category.id}>
                 {category.name}
               </option>
             ))}
@@ -175,17 +181,15 @@ export default function AddExpensePage() {
         {/* Note */}
         <div>
           <label className="mb-2 block text-sm font-medium">
-            Note
+            {messages.expenses.note}
           </label>
 
           <textarea
-            placeholder="Optional note"
-            className="w-full rounded-2xl border p-4 outline-none"
+            placeholder={messages.expenses.optionalNote}
+            className="w-full rounded-2xl border p-4 transition outline-none focus:border-black"
             rows={4}
             value={note}
-            onChange={(e) =>
-              setNote(e.target.value)
-            }
+            onChange={(e) => setNote(e.target.value)}
           />
         </div>
 
@@ -194,11 +198,9 @@ export default function AddExpensePage() {
           type="button"
           onClick={handleSubmit}
           disabled={loading}
-          className="w-full rounded-2xl bg-black p-4 font-medium text-white disabled:opacity-50"
+          className="w-full rounded-2xl bg-black p-4 font-medium text-white transition active:scale-[0.98] disabled:opacity-50"
         >
-          {loading
-            ? "Saving..."
-            : "Save Expense"}
+          {loading ? messages.expenses.saving : messages.expenses.saveExpense}
         </button>
       </div>
     </div>

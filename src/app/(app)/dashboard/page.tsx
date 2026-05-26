@@ -13,25 +13,39 @@ const supabase = createClient();
 type Expense = {
   id: string;
   amount: number;
-  note: string;
+  note: string | null;
   expense_date: string;
+
   expense_categories: {
     name: string;
   } | null;
+
+  users: {
+    full_name: string;
+  } | null;
+};
+
+type MemberTotal = {
+  name: string;
+  amount: number;
 };
 
 export default function DashboardPage() {
+  const { messages } = useLanguage();
+
   const [monthlyExpense, setMonthlyExpense] = useState(0);
 
   const [totalExpenses, setTotalExpenses] = useState(0);
 
   const [totalCategories, setTotalCategories] = useState(0);
 
+  const [myTotal, setMyTotal] = useState(0);
+
+  const [memberTotals, setMemberTotals] = useState<MemberTotal[]>([]);
+
   const [recentExpenses, setRecentExpenses] = useState<Expense[]>([]);
 
   const [loading, setLoading] = useState(true);
-
-  const { messages } = useLanguage();
 
   useEffect(() => {
     loadDashboard();
@@ -60,7 +74,12 @@ export default function DashboardPage() {
     setLoading(true);
 
     try {
-      // Current Month
+      // Logged In User
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      // Current Month Start
       const now = new Date();
 
       const firstDay = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -79,7 +98,7 @@ export default function DashboardPage() {
 
       setMonthlyExpense(monthlyTotal);
 
-      // Total Expenses
+      // Expense Count
       const { count: expenseCount } = await supabase
         .from("expenses")
         .select("*", {
@@ -90,7 +109,7 @@ export default function DashboardPage() {
 
       setTotalExpenses(expenseCount || 0);
 
-      // Total Categories
+      // Category Count
       const { count: categoryCount } = await supabase
         .from("expense_categories")
         .select("*", {
@@ -110,8 +129,13 @@ export default function DashboardPage() {
           amount,
           note,
           expense_date,
+
           expense_categories (
             name
+          ),
+
+          users (
+            full_name
           )
         `
         )
@@ -121,16 +145,59 @@ export default function DashboardPage() {
         })
         .limit(5);
 
-      setRecentExpenses(recentData || []);
+      setRecentExpenses((recentData || []) as Expense[]);
+
+      // My Spending
+      if (user) {
+        const { data: myExpenses } = await supabase
+          .from("expenses")
+          .select("amount")
+          .eq("created_by", user.id)
+          .eq("is_deleted", false);
+
+        const total =
+          myExpenses?.reduce((sum, item) => sum + item.amount, 0) || 0;
+
+        setMyTotal(total);
+      }
+
+      // Member Contributions
+      const { data: memberExpenses } = await supabase
+        .from("expenses")
+        .select(
+          `
+          amount,
+
+          users (
+            full_name
+          )
+        `
+        )
+        .eq("is_deleted", false);
+
+      const grouped: Record<string, number> = {};
+
+      memberExpenses?.forEach((item: any) => {
+        const name = item.users?.full_name || "Unknown";
+
+        grouped[name] = (grouped[name] || 0) + item.amount;
+      });
+
+      const totals = Object.entries(grouped).map(([name, amount]) => ({
+        name,
+        amount,
+      }));
+
+      setMemberTotals(totals as MemberTotal[]);
     } catch (error) {
-      console.error(error);
+      console.error("Dashboard Error:", error);
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-6 px-4 pb-28">
       {/* Header */}
       <PageHeader
         title={messages.dashboard.title}
@@ -143,7 +210,7 @@ export default function DashboardPage() {
           {messages.dashboard.monthlyExpense}
         </p>
 
-        <h2 className="mt-3 text-4xl font-bold">৳ {monthlyExpense}</h2>
+        <h2 className="mt-3 text-5xl font-bold">৳ {monthlyExpense}</h2>
 
         <p className="mt-2 text-sm opacity-70">
           {messages.dashboard.currentMonthExpense}
@@ -152,35 +219,74 @@ export default function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-2xl border bg-white p-4 shadow-sm">
+        <div className="rounded-3xl border bg-white p-4 shadow-sm">
           <p className="text-sm text-gray-500">
             {messages.dashboard.totalExpenses}
           </p>
 
-          <h3 className="mt-2 text-2xl font-bold">{totalExpenses}</h3>
+          <h3 className="mt-2 text-3xl font-bold">{totalExpenses}</h3>
         </div>
 
-        <div className="rounded-2xl border bg-white p-4 shadow-sm">
+        <div className="rounded-3xl border bg-white p-4 shadow-sm">
           <p className="text-sm text-gray-500">
             {messages.dashboard.categories}
           </p>
 
-          <h3 className="mt-2 text-2xl font-bold">{totalCategories}</h3>
+          <h3 className="mt-2 text-3xl font-bold">{totalCategories}</h3>
+        </div>
+      </div>
+
+      {/* My Spending */}
+      <div className="rounded-3xl border bg-white p-5 shadow-sm">
+        <p className="text-sm text-gray-500">
+          {messages.dashboard.yourSpending}
+        </p>
+
+        <h2 className="mt-2 text-4xl font-bold">৳ {myTotal}</h2>
+      </div>
+
+      {/* Member Contributions */}
+      <div className="rounded-3xl border bg-white p-5 shadow-sm">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            {messages.dashboard.memberContribution}
+          </h2>
+        </div>
+
+        <div className="mt-4 space-y-3">
+          {memberTotals.map((member) => (
+            <div
+              key={member.name}
+              className="flex items-center justify-between rounded-2xl bg-gray-50 px-4 py-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black text-sm font-semibold text-white">
+                  {member.name?.charAt(0)?.toUpperCase()}
+                </div>
+
+                <p className="font-medium">{member.name}</p>
+              </div>
+
+              <p className="text-lg font-bold">৳ {member.amount}</p>
+            </div>
+          ))}
         </div>
       </div>
 
       {/* Recent Expenses */}
-      <div className="rounded-2xl border bg-white p-4 shadow-sm">
+      <div className="rounded-3xl border bg-white p-5 shadow-sm">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold">
+          <h2 className="text-lg font-semibold">
             {messages.dashboard.recentExpenses}
-          </h3>
+          </h2>
         </div>
 
         {loading ? (
-          <div className="mt-4 text-sm text-gray-500">Loading...</div>
+          <div className="mt-4 text-sm text-gray-500">
+            {messages.common.loading}
+          </div>
         ) : recentExpenses.length === 0 ? (
-          <div className="mt-4 rounded-xl bg-gray-50 p-4 text-center">
+          <div className="mt-4 rounded-2xl bg-gray-50 p-5 text-center">
             <p className="text-sm text-gray-500">
               {messages.dashboard.noExpenses}
             </p>
@@ -188,19 +294,27 @@ export default function DashboardPage() {
         ) : (
           <div className="mt-4 space-y-3">
             {recentExpenses.map((expense) => (
-              <div
-                key={expense.id}
-                className="flex items-center justify-between rounded-2xl bg-gray-50 p-3"
-              >
-                <div>
-                  <p className="font-medium">৳ {expense.amount}</p>
+              <div key={expense.id} className="rounded-2xl bg-gray-50 p-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-xl font-bold">৳ {expense.amount}</p>
 
-                  <p className="text-sm text-gray-500">
-                    {expense.expense_categories?.name}
+                    <p className="mt-1 text-sm text-gray-600">
+                      {expense.expense_categories?.name || "-"}
+                    </p>
+
+                    <p className="mt-2 text-xs text-gray-500">
+                      {messages.expenses.spentBy}:{" "}
+                      <span className="font-medium">
+                        {expense.users?.full_name || "-"}
+                      </span>
+                    </p>
+                  </div>
+
+                  <p className="text-xs text-gray-400">
+                    {new Date(expense.expense_date).toLocaleDateString()}
                   </p>
                 </div>
-
-                <p className="text-xs text-gray-400">{expense.expense_date}</p>
               </div>
             ))}
           </div>
