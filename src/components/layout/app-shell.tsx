@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react";
 
-import BottomNavbar from "./bottom-nav";
+import BottomNav from "./bottom-nav";
 
 type Props = {
   children: ReactNode;
@@ -18,7 +18,7 @@ export default function AppShell({
           {children}
         </main>
 
-        <BottomNavbar />
+        <BottomNav />
       </div>
     </div>
   );

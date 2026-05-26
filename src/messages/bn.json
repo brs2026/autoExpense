@@ -1,0 +1,76 @@
+{
+  "nav": {
+    "home": "হোম",
+    "expenses": "খরচ",
+    "reports": "রিপোর্ট",
+    "settings": "সেটিংস"
+  },
+
+  "dashboard": {
+    "title": "ড্যাশবোর্ড",
+    "subtitle": "অটোএক্সপেন্সে স্বাগতম",
+    "monthlyExpense": "মাসিক খরচ",
+    "currentMonthExpense": "বর্তমান মাসের মোট খরচ",
+    "totalExpenses": "মোট খরচ",
+    "categories": "ক্যাটাগরি",
+    "recentExpenses": "সাম্প্রতিক খরচ",
+    "noExpenses": "এখনো কোনো খরচ যোগ করা হয়নি"
+  },
+
+  "expenses": {
+    "title": "খরচ",
+    "subtitle": "সব খরচ পরিচালনা করুন",
+    "add": "খরচ যোগ করুন",
+    "detailsTitle": "খরচের বিস্তারিত",
+    "detailsSubtitle": "খরচের তথ্য দেখুন",
+    "expenseAmount": "খরচের পরিমাণ",
+    "category": "ক্যাটাগরি",
+    "date": "তারিখ",
+    "note": "নোট",
+    "notFound": "খরচ পাওয়া যায়নি",
+    "deleteConfirm": "এই খরচ মুছে ফেলবেন?",
+    "noExpenses": "এখনো কোনো খরচ যোগ করা হয়নি"
+  },
+
+  "reports": {
+    "title": "রিপোর্ট",
+    "subtitle": "খরচ বিশ্লেষণ",
+    "totalExpense": "মোট খরচ",
+    "monthlyExpenses": "মাসিক খরচ",
+    "categoryBreakdown": "ক্যাটাগরি বিশ্লেষণ"
+  },
+
+  "settings": {
+    "title": "সেটিংস",
+    "subtitle": "অ্যাপ সেটিংস পরিচালনা করুন",
+    "profile": "প্রোফাইল",
+    "name": "নাম",
+    "role": "ভূমিকা",
+    "categories": "ক্যাটাগরি",
+    "newCategory": "নতুন ক্যাটাগরি",
+    "language": "ভাষা",
+    "logout": "লগআউট",
+    "users": "ব্যবহারকারী",
+    "usersSubtitle": "অ্যাপ ব্যবহারকারী পরিচালনা করুন"
+  },
+
+  "common": {
+    "loading": "লোড হচ্ছে..."
+  },
+
+  "users": {
+    "title": "ব্যবহারকারী",
+    "subtitle": "অ্যাপ ব্যবহারকারী পরিচালনা করুন",
+    "createUser": "নতুন ব্যবহারকারী",
+    "fullName": "পূর্ণ নাম",
+    "username": "ইউজারনেম",
+    "password": "পাসওয়ার্ড",
+    "create": "ব্যবহারকারী তৈরি করুন",
+    "active": "সক্রিয়",
+    "disabled": "নিষ্ক্রিয়",
+    "disable": "বন্ধ করুন",
+    "enable": "সক্রিয় করুন",
+    "users": "ব্যবহারকারী",
+    "usersSubtitle": "অ্যাপ ব্যবহারকারী পরিচালনা করুন"
+  }
+}

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/browser-client";
-import { toast } from "sonner";
+import PageHeader from "@/components/layout/page-header";
 
 const supabase = createClient();
 
@@ -106,24 +106,11 @@ export default function AddExpensePage() {
   return (
     <div className="space-y-6 p-4">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <Link
-          href="/expenses"
-          className="rounded-full border p-2"
-        >
-          <ArrowLeft size={18} />
-        </Link>
-
-        <div>
-          <h1 className="text-3xl font-bold">
-            Add Expense
-          </h1>
-
-          <p className="text-gray-500">
-            Create a new expense
-          </p>
-        </div>
-      </div>
+      <PageHeader
+  title="Add Expense"
+  subtitle="Create a new expense"
+  backHref="/expenses"
+/>
 
       {/* Message */}
       {message && (

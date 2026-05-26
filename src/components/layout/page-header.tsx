@@ -20,14 +20,14 @@ export default function PageHeader({
       {backHref && (
         <Link
           href={backHref}
-          className="mt-1 rounded-full border bg-white p-2 shadow-sm"
+          className="mt-1 rounded-full border bg-white p-2 shadow-sm transition active:scale-95"
         >
           <ArrowLeft size={18} />
         </Link>
       )}
 
       <div>
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-bold text-black">
           {title}
         </h1>
 

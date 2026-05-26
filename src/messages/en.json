@@ -1,0 +1,74 @@
+{
+  "nav": {
+    "home": "Home",
+    "expenses": "Expenses",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Welcome to AutoExpense",
+    "monthlyExpense": "Monthly Expense",
+    "currentMonthExpense": "Current month total expense",
+    "totalExpenses": "Total Expenses",
+    "categories": "Categories",
+    "recentExpenses": "Recent Expenses",
+    "noExpenses": "No expenses added yet"
+  },
+
+  "expenses": {
+    "title": "Expenses",
+    "subtitle": "Manage all expenses",
+    "add": "Add Expense",
+    "detailsTitle": "Expense Details",
+    "detailsSubtitle": "View expense information",
+    "expenseAmount": "Expense Amount",
+    "category": "Category",
+    "date": "Date",
+    "note": "Note",
+    "notFound": "Expense not found",
+    "deleteConfirm": "Delete this expense?",
+    "noExpenses": "No expenses added yet"
+  },
+
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Expense analytics overview",
+    "totalExpense": "Total Expense",
+    "monthlyExpenses": "Monthly Expenses",
+    "categoryBreakdown": "Category Breakdown"
+  },
+
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your app settings",
+    "profile": "Profile",
+    "name": "Name",
+    "role": "Role",
+    "categories": "Categories",
+    "newCategory": "New category",
+    "language": "Language",
+    "logout": "Logout",
+    "users": "Users",
+    "usersSubtitle": "Manage application users"
+  },
+
+  "common": {
+    "loading": "লোড হচ্ছে..."
+  },
+
+  "users": {
+    "title": "Users",
+    "subtitle": "Manage application users",
+    "createUser": "Create User",
+    "fullName": "Full Name",
+    "username": "Username",
+    "password": "Password",
+    "create": "Create User",
+    "active": "Active",
+    "disabled": "Disabled",
+    "disable": "Disable",
+    "enable": "Enable"
+  }
+}

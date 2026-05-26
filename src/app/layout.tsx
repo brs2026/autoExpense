@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { LanguageProvider } from "@/context/language-context";
+
 import "./globals.css";
 
 import { Toaster } from "sonner";
@@ -18,13 +20,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
-
-        <Toaster
-          position="top-center"
-          richColors
-        />
-      </body>
+  <LanguageProvider>
+    {children}
+  </LanguageProvider>
+</body>
     </html>
   );
 }
