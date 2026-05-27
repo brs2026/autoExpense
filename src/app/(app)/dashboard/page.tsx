@@ -16,18 +16,17 @@ type Expense = {
   note: string | null;
   expense_date: string;
 
-  expense_categories: {
-    name: string;
-  } | null;
+  expense_categories:
+    | {
+        name: string;
+      }[]
+    | null;
 
-  users: {
-    full_name: string;
-  } | null;
-};
-
-type MemberTotal = {
-  name: string;
-  amount: number;
+  users:
+    | {
+        full_name: string;
+      }[]
+    | null;
 };
 
 export default function DashboardPage() {
@@ -300,13 +299,13 @@ export default function DashboardPage() {
                     <p className="text-xl font-bold">৳ {expense.amount}</p>
 
                     <p className="mt-1 text-sm text-gray-600">
-                      {expense.expense_categories?.name || "-"}
+                      {expense.expense_categories?.[0]?.name || "-"}
                     </p>
 
                     <p className="mt-2 text-xs text-gray-500">
                       {messages.expenses.spentBy}:{" "}
                       <span className="font-medium">
-                        {expense.users?.full_name || "-"}
+                        {expense.users?.[0]?.full_name || "-"}
                       </span>
                     </p>
                   </div>
