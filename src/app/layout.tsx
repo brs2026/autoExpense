@@ -4,12 +4,11 @@ import { LanguageProvider } from "@/context/language-context";
 
 import "./globals.css";
 
-import { Toaster } from "sonner";
-
 export const metadata: Metadata = {
   title: "AutoExpense",
-  description:
-    "Vehicle expense management system",
+  description: "Vehicle expense management system",
+  manifest: "/manifest.json",
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
@@ -20,10 +19,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-  <LanguageProvider>
-    {children}
-  </LanguageProvider>
-</body>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }
