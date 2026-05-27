@@ -29,6 +29,11 @@ type Expense = {
     | null;
 };
 
+type MemberTotal = {
+  name: string;
+  amount: number;
+};
+
 export default function DashboardPage() {
   const { messages } = useLanguage();
 
