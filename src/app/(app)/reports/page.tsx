@@ -23,15 +23,26 @@ import { useLanguage } from "@/context/language-context";
 const supabase = createClient();
 
 const COLORS = [
-  "#3B82F6", // blue
-  "#10B981", // green
-  "#F59E0B", // amber
-  "#EF4444", // red
-  "#8B5CF6", // purple
-  "#06B6D4", // cyan
-  "#EC4899", // pink
-  "#84CC16", // lime
+  "#3B82F6",
+  "#10B981",
+  "#F59E0B",
+  "#EF4444",
+  "#8B5CF6",
+  "#06B6D4",
+  "#EC4899",
+  "#84CC16",
 ];
+
+type Expense = {
+  amount: number;
+  expense_date: string;
+  category_id: string;
+};
+
+type Category = {
+  id: string;
+  name: string;
+};
 
 type CategoryReport = {
   name: string;
@@ -44,7 +55,7 @@ type MonthlyReport = {
 };
 
 export default function ReportsPage() {
-  const { messages } = useLanguage();
+  const { messages, language } = useLanguage();
 
   const [categoryData, setCategoryData] = useState<CategoryReport[]>([]);
 
@@ -59,74 +70,102 @@ export default function ReportsPage() {
   }, []);
 
   async function loadReports() {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const { data, error } = await supabase
-      .from("expenses")
-      .select(
+      // Expenses
+      const { data: expenseData, error: expenseError } = await supabase
+        .from("expenses")
+        .select(
+          `
+          amount,
+          expense_date,
+          category_id
         `
-        amount,
-        expense_date,
-        expense_categories (
-          name
         )
-      `
-      )
-      .eq("is_deleted", false);
+        .eq("is_deleted", false);
 
-    if (error || !data) {
-      setLoading(false);
-      return;
-    }
+      if (expenseError || !expenseData) {
+        console.error(expenseError);
 
-    // Total Expense
-    const total = data.reduce((sum, item) => sum + item.amount, 0);
+        return;
+      }
 
-    setTotalExpense(total);
+      // Categories
+      const { data: categoriesData, error: categoriesError } =
+        await supabase.from("expense_categories").select(`
+          id,
+          name
+        `);
 
-    // Category Breakdown
-    const groupedCategories: Record<string, number> = {};
+      if (categoriesError) {
+        console.error(categoriesError);
 
-    data.forEach((item) => {
-      const category = item.expense_categories?.name || "Unknown";
+        return;
+      }
 
-      groupedCategories[category] =
-        (groupedCategories[category] || 0) + item.amount;
-    });
+      const expenses = expenseData as Expense[];
 
-    const categoryResult = Object.entries(groupedCategories).map(
-      ([name, total]) => ({
-        name,
-        total,
-      })
-    );
+      const categories = categoriesData as Category[];
 
-    setCategoryData(categoryResult);
+      // Total Expense
+      const total = expenses.reduce((sum, item) => sum + item.amount, 0);
 
-    // Monthly Report
-    const groupedMonths: Record<string, number> = {};
+      setTotalExpense(total);
 
-    data.forEach((item) => {
-      const month = new Date(item.expense_date).toLocaleString(
-        messages.language === "bn" ? "bn-BD" : "en-US",
-        {
-          month: "short",
-        }
+      // Category Map
+      const categoryMap: Record<string, string> = {};
+
+      categories.forEach((category) => {
+        categoryMap[category.id] = category.name;
+      });
+
+      // Category Breakdown
+      const groupedCategories: Record<string, number> = {};
+
+      expenses.forEach((item) => {
+        const category = categoryMap[item.category_id] || "Unknown";
+
+        groupedCategories[category] =
+          (groupedCategories[category] || 0) + item.amount;
+      });
+
+      const categoryResult = Object.entries(groupedCategories).map(
+        ([name, total]) => ({
+          name,
+          total,
+        })
       );
 
-      groupedMonths[month] = (groupedMonths[month] || 0) + item.amount;
-    });
+      setCategoryData(categoryResult);
 
-    const monthlyResult = Object.entries(groupedMonths).map(
-      ([month, total]) => ({
-        month,
-        total,
-      })
-    );
+      // Monthly Report
+      const groupedMonths: Record<string, number> = {};
 
-    setMonthlyData(monthlyResult);
+      expenses.forEach((item) => {
+        const month = new Date(item.expense_date).toLocaleString(
+          language === "bn" ? "bn-BD" : "en-US",
+          {
+            month: "short",
+          }
+        );
 
-    setLoading(false);
+        groupedMonths[month] = (groupedMonths[month] || 0) + item.amount;
+      });
+
+      const monthlyResult = Object.entries(groupedMonths).map(
+        ([month, total]) => ({
+          month,
+          total,
+        })
+      );
+
+      setMonthlyData(monthlyResult);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (loading) {
@@ -134,7 +173,7 @@ export default function ReportsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-28">
       <PageHeader
         title={messages.reports.title}
         subtitle={messages.reports.subtitle}
@@ -142,14 +181,14 @@ export default function ReportsPage() {
 
       {/* Total Expense */}
       <div className="px-4">
-        <div className="rounded-3xl bg-black p-6 text-white">
+        <div className="rounded-3xl bg-black p-6 text-white shadow-lg">
           <p className="text-sm opacity-70">{messages.reports.totalExpense}</p>
 
           <h2 className="mt-2 text-5xl font-bold">৳ {totalExpense}</h2>
         </div>
       </div>
 
-      {/* Monthly Chart */}
+      {/* Monthly Expenses */}
       <div className="px-4">
         <div className="rounded-3xl border bg-white p-4 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">
@@ -173,35 +212,42 @@ export default function ReportsPage() {
       </div>
 
       {/* Category Breakdown */}
-      <div className="px-4 pb-10">
+      <div className="px-4">
         <div className="rounded-3xl border bg-white p-4 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">
             {messages.reports.categoryBreakdown}
           </h2>
 
-          <div className="h-72">
+          <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={categoryData}
                   dataKey="total"
                   nameKey="name"
+                  cx="50%"
+                  cy="50%"
                   outerRadius={100}
                   label
                 >
-                  {categoryData.map((_, index) => (
-                    <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                  {categoryData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
+
+                <Tooltip />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
           {/* Legend */}
           <div className="mt-4 space-y-2">
-            {categoryData.map((category, index) => (
+            {categoryData.map((item, index) => (
               <div
-                key={category.name}
+                key={item.name}
                 className="flex items-center justify-between"
               >
                 <div className="flex items-center gap-2">
@@ -212,10 +258,10 @@ export default function ReportsPage() {
                     }}
                   />
 
-                  <p className="text-sm">{category.name}</p>
+                  <span className="text-sm">{item.name}</span>
                 </div>
 
-                <p className="text-sm font-medium">৳ {category.total}</p>
+                <span className="text-sm font-medium">৳ {item.total}</span>
               </div>
             ))}
           </div>

@@ -21,7 +21,7 @@ type Expense = {
 
   expense_categories: {
     name: string;
-  } | null;
+  }[];
 };
 
 export default function ExpenseDetailsPage() {
@@ -150,7 +150,9 @@ export default function ExpenseDetailsPage() {
         <div>
           <p className="text-sm text-gray-500">Category</p>
 
-          <p className="mt-1 font-medium">{expense.expense_categories?.name}</p>
+          <p className="mt-1 font-medium">
+            {expense.expense_categories?.[0]?.name}
+          </p>
         </div>
 
         <div>
