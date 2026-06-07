@@ -54,7 +54,17 @@
     "invalidAmount": "Please enter a valid amount",
     "selectCategoryValidation": "Please select a category",
     "loadingExpense": "Loading...",
-    "updateFailed": "Failed to update expense"
+    "updateFailed": "Failed to update expense",
+    "receipt": "Receipt",
+    "attachReceipt": "Attach Receipt",
+    "receiptAttached": "Receipt Attached",
+    "noReceipt": "No Receipt Uploaded",
+    "tapToView": "Tap to View",
+    "receiptOptional": "Optional",
+    "changeReceipt": "Change Receipt",
+    "removeReceipt": "Remove Receipt",
+    "compressingImage": "Compressing image...",
+    "uploadingReceipt": "Uploading receipt..."
   },
 
   "reports": {

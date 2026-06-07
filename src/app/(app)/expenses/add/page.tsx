@@ -1,10 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
-
-import { Pencil } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/browser-client";
 
@@ -12,7 +10,9 @@ import PageHeader from "@/components/layout/page-header";
 
 import { useLanguage } from "@/context/language-context";
 
-import { CalendarDays } from "lucide-react";
+import { CalendarDays, Camera, Trash2 } from "lucide-react";
+
+import imageCompression from "browser-image-compression";
 
 const supabase = createClient();
 
@@ -44,6 +44,10 @@ export default function AddExpensePage() {
     new Date().toISOString().split("T")[0]
   );
 
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+
+  const [uploadingReceipt, setUploadingReceipt] = useState(false);
+
   useEffect(() => {
     async function loadCategories() {
       const { data, error } = await supabase
@@ -69,6 +73,28 @@ export default function AddExpensePage() {
         year: "numeric",
       }
     );
+  }
+
+  async function handleReceiptSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      setUploadingReceipt(true);
+
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 0.2,
+        maxWidthOrHeight: 1200,
+        useWebWorker: true,
+      });
+
+      setReceiptFile(compressedFile as File);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setUploadingReceipt(false);
+    }
   }
 
   async function handleSubmit() {
@@ -115,6 +141,32 @@ export default function AddExpensePage() {
         return;
       }
 
+      let receiptPath: string | null = null;
+
+      if (receiptFile) {
+        setUploadingReceipt(true);
+
+        const extension = receiptFile.name.split(".").pop() || "jpg";
+
+        const fileName = `receipts/${Date.now()}_${crypto.randomUUID()}.${extension}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("expense-receipts")
+          .upload(fileName, receiptFile);
+
+        if (uploadError) {
+          setMessage(uploadError.message);
+
+          setMessageType("error");
+
+          return;
+        }
+
+        receiptPath = fileName;
+
+        setUploadingReceipt(false);
+      }
+
       const { error } = await supabase.from("expenses").insert({
         amount: Number(amount),
 
@@ -125,6 +177,8 @@ export default function AddExpensePage() {
         expense_date: expenseDate,
 
         created_by: user.id,
+
+        receipt_url: receiptPath,
       });
 
       if (error) {
@@ -240,6 +294,61 @@ export default function AddExpensePage() {
               <CalendarDays size={18} className="shrink-0 text-gray-500" />
             </div>
           </label>
+        </div>
+
+        {/* Receipt */}
+        <div>
+          <div className="mb-2 flex items-center gap-2">
+            <label className="block text-sm font-medium">
+              {messages.expenses.receipt}
+            </label>
+
+            <span className="text-xs text-gray-400">
+              ({messages.expenses.receiptOptional})
+            </span>
+          </div>
+
+          {receiptFile ? (
+            <div className="rounded-2xl border bg-gray-50 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">
+                    {messages.expenses.receiptAttached}
+                  </p>
+
+                  <p className="mt-1 text-sm text-gray-500">
+                    {receiptFile.name}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setReceiptFile(null)}
+                  className="rounded-xl p-2 text-red-500"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-dashed p-5 transition hover:bg-gray-50">
+              <Camera size={18} />
+
+              <span>
+                {uploadingReceipt
+                  ? messages.expenses.compressingImage
+                  : messages.expenses.attachReceipt}
+              </span>
+
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleReceiptSelect}
+                className="hidden"
+              />
+            </label>
+          )}
         </div>
 
         {/* Note */}

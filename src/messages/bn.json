@@ -54,7 +54,15 @@
     "invalidAmount": "অনুগ্রহ করে সঠিক পরিমাণ লিখুন",
     "selectCategoryValidation": "অনুগ্রহ করে একটি ক্যাটাগরি নির্বাচন করুন",
     "loadingExpense": "লোড হচ্ছে...",
-    "updateFailed": "খরচ আপডেট করা যায়নি"
+    "updateFailed": "খরচ আপডেট করা যায়নি",
+    "receipt": "রসিদ",
+    "attachReceipt": "রসিদ সংযুক্ত করুন",
+    "receiptOptional": "ঐচ্ছিক",
+    "receiptAttached": "রসিদ সংযুক্ত হয়েছে",
+    "changeReceipt": "রসিদ পরিবর্তন করুন",
+    "removeReceipt": "রসিদ সরান",
+    "compressingImage": "ছবি কমপ্রেস করা হচ্ছে...",
+    "uploadingReceipt": "রসিদ আপলোড করা হচ্ছে..."
   },
 
   "reports": {
