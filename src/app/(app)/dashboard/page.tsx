@@ -16,17 +16,13 @@ type Expense = {
   note: string | null;
   expense_date: string;
 
-  expense_categories:
-    | {
-        name: string;
-      }[]
-    | null;
+  expense_categories: {
+    name: string;
+  } | null;
 
-  users:
-    | {
-        full_name: string;
-      }[]
-    | null;
+  users: {
+    full_name: string;
+  } | null;
 };
 
 type MemberTotal = {
@@ -125,9 +121,24 @@ export default function DashboardPage() {
         })
         .limit(5);
 
-      console.log(recentData); //#####
+      const formattedExpenses: Expense[] = (recentData || []).map(
+        (item: any) => ({
+          id: item.id,
+          amount: item.amount,
+          note: item.note,
+          expense_date: item.expense_date,
 
-      setRecentExpenses((recentData || []) as Expense[]);
+          expense_categories: Array.isArray(item.expense_categories)
+            ? (item.expense_categories[0] ?? null)
+            : item.expense_categories,
+
+          users: Array.isArray(item.users)
+            ? (item.users[0] ?? null)
+            : item.users,
+        })
+      );
+
+      setRecentExpenses(formattedExpenses);
 
       // My Spending + User Name
       if (user) {
@@ -275,13 +286,13 @@ export default function DashboardPage() {
                     <p className="text-xl font-bold">৳ {expense.amount}</p>
 
                     <p className="mt-1 text-sm text-gray-600">
-                      {expense.expense_categories?.[0]?.name || "-"}
+                      {expense.expense_categories?.name || "-"}
                     </p>
 
                     <p className="mt-2 text-xs text-gray-500">
                       {messages.expenses.spentBy}:{" "}
                       <span className="font-medium">
-                        {expense.users?.[0]?.full_name || "-"}
+                        {expense.users?.full_name || "-"}
                       </span>
                     </p>
                   </div>
