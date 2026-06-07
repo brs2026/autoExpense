@@ -221,25 +221,6 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      /* {/* Stats */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="rounded-3xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">
-            {messages.dashboard.totalExpenses}
-          </p>
-
-          <h3 className="mt-2 text-3xl font-bold">{totalExpenses}</h3>
-        </div>
-
-        <div className="rounded-3xl border bg-white p-4 shadow-sm">
-          <p className="text-sm text-gray-500">
-            {messages.dashboard.categories}
-          </p>
-
-          <h3 className="mt-2 text-3xl font-bold">{totalCategories}</h3>
-        </div>
-      </div> */
-
       {/* My Spending */}
       <div className="rounded-3xl border bg-white p-5 shadow-sm">
         <p className="text-sm text-gray-500">
