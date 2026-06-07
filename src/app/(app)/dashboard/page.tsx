@@ -221,7 +221,7 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Stats */}
+      /* {/* Stats */}
       <div className="grid grid-cols-2 gap-4">
         <div className="rounded-3xl border bg-white p-4 shadow-sm">
           <p className="text-sm text-gray-500">
@@ -238,7 +238,7 @@ export default function DashboardPage() {
 
           <h3 className="mt-2 text-3xl font-bold">{totalCategories}</h3>
         </div>
-      </div>
+      </div> */
 
       {/* My Spending */}
       <div className="rounded-3xl border bg-white p-5 shadow-sm">
