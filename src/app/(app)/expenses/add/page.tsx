@@ -343,7 +343,6 @@ export default function AddExpensePage() {
               <input
                 type="file"
                 accept="image/*"
-                capture="environment"
                 onChange={handleReceiptSelect}
                 className="hidden"
               />

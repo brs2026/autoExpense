@@ -10,9 +10,7 @@ import { useLanguage } from "@/context/language-context";
 
 import Link from "next/link";
 
-import { Pencil, Trash2, X } from "lucide-react";
-
-import PageHeader from "@/components/layout/page-header";
+import { ChevronLeft, Pencil, Trash2, X } from "lucide-react";
 
 const supabase = createClient();
 
@@ -159,46 +157,63 @@ export default function ExpenseDetailsPage() {
 
   return (
     <>
-      <div className="space-y-6 p-4 pb-28">
-        {/* Header */}
+      <div className="overflow-hidden rounded-3xl bg-white pb-28 shadow-sm">
+        {/* Header — back button, title, and actions all in one row */}
+        <div className="rounded-t-3xl border-b bg-white px-4 py-4">
+          <div className="flex items-center justify-between">
+            {/* Left: back button + title */}
+            <div className="flex items-center gap-3">
+              <Link
+                href="/expenses"
+                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gray-100 transition hover:bg-gray-200"
+              >
+                <ChevronLeft size={20} />
+              </Link>
 
-        <PageHeader
-          title={messages.expenses.detailsTitle}
-          subtitle={messages.expenses.detailsSubtitle}
-          backHref="/expenses"
-        />
+              <div>
+                <h1 className="text-xl leading-tight font-bold">
+                  {messages.expenses.detailsTitle}
+                </h1>
+                <p className="text-xs text-gray-500">
+                  {messages.expenses.detailsSubtitle}
+                </p>
+              </div>
+            </div>
 
-        {canManage && (
-          <div className="flex justify-end gap-2">
-            <Link
-              href={`/expenses/edit/${expense.id}`}
-              className="rounded-2xl border bg-white p-3 shadow-sm transition active:scale-95"
-            >
-              <Pencil size={18} />
-            </Link>
+            {/* Right: edit + delete */}
+            {canManage && (
+              <div className="flex gap-2">
+                <Link
+                  href={`/expenses/edit/${expense.id}`}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 transition hover:bg-gray-200"
+                >
+                  <Pencil size={16} />
+                </Link>
 
-            <button
-              onClick={handleDelete}
-              className="rounded-2xl border border-red-200 bg-white p-3 text-red-500 shadow-sm transition active:scale-95"
-            >
-              <Trash2 size={18} />
-            </button>
+                <button
+                  onClick={handleDelete}
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-500 transition hover:bg-red-100"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </div>
 
         {/* Amount */}
-        <div className="rounded-3xl bg-black p-6 text-white">
-          <p className="text-sm opacity-70">
+        <div className="mx-4 mt-4 rounded-2xl bg-black p-5 text-white shadow-lg">
+          <p className="text-xs font-medium tracking-widest uppercase opacity-60">
             {messages.expenses.expenseAmount}
           </p>
 
-          <h1 className="mt-2 text-5xl font-bold">৳ {expense.amount}</h1>
+          <h1 className="mt-2 text-4xl font-bold">৳ {expense.amount}</h1>
         </div>
 
         {/* Details */}
-        <div className="space-y-4 rounded-3xl border bg-white p-4 shadow-sm">
+        <div className="mx-4 mt-3 space-y-4 rounded-2xl border bg-white p-4 shadow-sm">
           <div>
-            <p className="text-sm text-gray-500">
+            <p className="text-xs font-medium tracking-widest text-gray-400 uppercase">
               {messages.expenses.category}
             </p>
 
@@ -208,7 +223,9 @@ export default function ExpenseDetailsPage() {
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">{messages.expenses.date}</p>
+            <p className="text-xs font-medium tracking-widest text-gray-400 uppercase">
+              {messages.expenses.date}
+            </p>
 
             <p className="mt-1 font-medium">
               {formatDate(expense.expense_date)}
@@ -216,15 +233,19 @@ export default function ExpenseDetailsPage() {
           </div>
 
           <div>
-            <p className="text-sm text-gray-500">{messages.expenses.note}</p>
+            <p className="text-xs font-medium tracking-widest text-gray-400 uppercase">
+              {messages.expenses.note}
+            </p>
 
-            <p className="mt-1 font-medium">{expense.note || "-"}</p>
+            <p className="mt-1 font-medium text-gray-400">
+              {expense.note || "—"}
+            </p>
           </div>
         </div>
 
         {/* Receipt */}
-        <div className="rounded-3xl border bg-white p-4 shadow-sm">
-          <h2 className="mb-3 text-lg font-semibold">
+        <div className="mx-4 mt-3 rounded-2xl border bg-white p-4 shadow-sm">
+          <h2 className="mb-3 text-base font-semibold">
             {messages.expenses.receipt}
           </h2>
 
@@ -245,14 +266,14 @@ export default function ExpenseDetailsPage() {
               </div>
             </button>
           ) : (
-            <div className="rounded-2xl bg-gray-50 p-5 text-center text-sm text-gray-500">
+            <div className="rounded-2xl border border-dashed bg-gray-50 p-8 text-center text-sm text-gray-400">
               {messages.expenses.noReceipt}
             </div>
           )}
         </div>
       </div>
 
-      {/* Fullscreen Viewer */}
+      {/* Fullscreen Receipt Viewer */}
       {showImage && receiptUrl && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4"
