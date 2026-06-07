@@ -10,11 +10,7 @@ type Props = {
   backHref?: string;
 };
 
-export default function PageHeader({
-  title,
-  subtitle,
-  backHref,
-}: Props) {
+export default function PageHeader({ title, subtitle, backHref }: Props) {
   return (
     <div className="flex items-start gap-3 p-4 pb-2">
       {backHref && (
@@ -27,15 +23,9 @@ export default function PageHeader({
       )}
 
       <div>
-        <h1 className="text-3xl font-bold text-black">
-          {title}
-        </h1>
+        <h1 className="text-3xl font-bold text-black">{title}</h1>
 
-        {subtitle && (
-          <p className="mt-1 text-sm text-gray-500">
-            {subtitle}
-          </p>
-        )}
+        {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
       </div>
     </div>
   );

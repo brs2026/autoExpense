@@ -8,7 +8,7 @@
 
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Welcome to AutoExpense",
+    "subtitle": "Welcome",
     "monthlyExpense": "Monthly Expense",
     "currentMonthExpense": "Current month total expense",
     "totalExpenses": "Total Expenses",
@@ -28,6 +28,7 @@
     "expenseAmount": "Expense Amount",
     "category": "Category",
     "date": "Date",
+    "changeDate": "Change Date",
     "note": "Note",
     "notFound": "Expense not found",
     "deleteConfirm": "Delete this expense?",
@@ -44,7 +45,16 @@
     "expenseAdded": "Expense added successfully",
     "userNotFound": "User not found",
     "expenseFailed": "Failed to add expense",
-    "somethingWrong": "Something went wrong"
+    "somethingWrong": "Something went wrong",
+    "editTitle": "Edit Expense",
+    "editSubtitle": "Update expense details",
+    "updateExpense": "Update Expense",
+    "updating": "Updating...",
+    "expenseUpdated": "Expense updated successfully",
+    "invalidAmount": "Please enter a valid amount",
+    "selectCategoryValidation": "Please select a category",
+    "loadingExpense": "Loading...",
+    "updateFailed": "Failed to update expense"
   },
 
   "reports": {
@@ -52,7 +62,10 @@
     "subtitle": "Expense analytics overview",
     "totalExpense": "Total Expense",
     "monthlyExpenses": "Monthly Expenses",
-    "categoryBreakdown": "Category Breakdown"
+    "categoryBreakdown": "Category Breakdown",
+    "monthlyHistory": "Monthly Expense History",
+    "month": "Month",
+    "noMonthlyData": "No monthly data found"
   },
 
   "settings": {

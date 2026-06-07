@@ -1,14 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useRouter } from "next/navigation";
+
+import { Pencil } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/browser-client";
 
 import PageHeader from "@/components/layout/page-header";
 
 import { useLanguage } from "@/context/language-context";
+
+import { CalendarDays } from "lucide-react";
 
 const supabase = createClient();
 
@@ -20,7 +24,7 @@ type Category = {
 export default function AddExpensePage() {
   const router = useRouter();
 
-  const { messages } = useLanguage();
+  const { messages, language } = useLanguage();
 
   const [categories, setCategories] = useState<Category[]>([]);
 
@@ -35,6 +39,10 @@ export default function AddExpensePage() {
   const [message, setMessage] = useState("");
 
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
+
+  const [expenseDate, setExpenseDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
   useEffect(() => {
     async function loadCategories() {
@@ -52,6 +60,17 @@ export default function AddExpensePage() {
     loadCategories();
   }, []);
 
+  function formatDate(date: string) {
+    return new Date(date).toLocaleDateString(
+      language === "bn" ? "bn-BD" : "en-US",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }
+    );
+  }
+
   async function handleSubmit() {
     try {
       setLoading(true);
@@ -59,6 +78,30 @@ export default function AddExpensePage() {
       setMessage("");
 
       setMessageType("");
+
+      if (!amount || Number(amount) <= 0) {
+        setMessage(
+          language === "bn"
+            ? "অনুগ্রহ করে সঠিক পরিমাণ লিখুন"
+            : "Please enter a valid amount"
+        );
+
+        setMessageType("error");
+
+        return;
+      }
+
+      if (!categoryId) {
+        setMessage(
+          language === "bn"
+            ? "অনুগ্রহ করে একটি ক্যাটাগরি নির্বাচন করুন"
+            : "Please select a category"
+        );
+
+        setMessageType("error");
+
+        return;
+      }
 
       const {
         data: { user },
@@ -79,7 +122,7 @@ export default function AddExpensePage() {
 
         note,
 
-        expense_date: new Date().toISOString().split("T")[0],
+        expense_date: expenseDate,
 
         created_by: user.id,
       });
@@ -104,6 +147,8 @@ export default function AddExpensePage() {
 
       setNote("");
 
+      setExpenseDate(new Date().toISOString().split("T")[0]);
+
       setTimeout(() => {
         router.push("/expenses");
       }, 1000);
@@ -120,14 +165,12 @@ export default function AddExpensePage() {
 
   return (
     <div className="space-y-6 p-4 pb-28">
-      {/* Header */}
       <PageHeader
         title={messages.expenses.addTitle}
         subtitle={messages.expenses.addSubtitle}
         backHref="/expenses"
       />
 
-      {/* Message */}
       {message && (
         <div
           className={`rounded-2xl p-4 text-sm font-medium ${
@@ -140,7 +183,6 @@ export default function AddExpensePage() {
         </div>
       )}
 
-      {/* Form */}
       <div className="space-y-5 rounded-3xl border bg-white p-5 shadow-sm">
         {/* Amount */}
         <div>
@@ -176,6 +218,28 @@ export default function AddExpensePage() {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Date */}
+        <div>
+          <label className="mb-2 block text-sm font-medium">
+            {messages.expenses.date}
+          </label>
+
+          <label className="relative block cursor-pointer">
+            <input
+              type="date"
+              value={expenseDate}
+              onChange={(e) => setExpenseDate(e.target.value)}
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            />
+
+            <div className="flex items-center justify-between rounded-2xl border bg-gray-50 px-4 py-4 transition hover:bg-gray-100 active:bg-gray-100">
+              <p className="text-lg font-medium">{formatDate(expenseDate)}</p>
+
+              <CalendarDays size={18} className="shrink-0 text-gray-500" />
+            </div>
+          </label>
         </div>
 
         {/* Note */}

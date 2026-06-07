@@ -54,12 +54,19 @@ type MonthlyReport = {
   total: number;
 };
 
+type MonthlyHistory = {
+  monthYear: string;
+  total: number;
+};
+
 export default function ReportsPage() {
   const { messages, language } = useLanguage();
 
   const [categoryData, setCategoryData] = useState<CategoryReport[]>([]);
 
   const [monthlyData, setMonthlyData] = useState<MonthlyReport[]>([]);
+
+  const [monthlyHistory, setMonthlyHistory] = useState<MonthlyHistory[]>([]);
 
   const [totalExpense, setTotalExpense] = useState(0);
 
@@ -73,44 +80,38 @@ export default function ReportsPage() {
     try {
       setLoading(true);
 
-      // Expenses
       const { data: expenseData, error: expenseError } = await supabase
         .from("expenses")
         .select(
           `
-          amount,
-          expense_date,
-          category_id
-        `
+        amount,
+        expense_date,
+        category_id
+      `
         )
         .eq("is_deleted", false);
 
       if (expenseError || !expenseData) {
         console.error(expenseError);
-
         return;
       }
 
-      // Categories
       const { data: categoriesData, error: categoriesError } =
         await supabase.from("expense_categories").select(`
-          id,
-          name
-        `);
+        id,
+        name
+      `);
 
-      if (categoriesError) {
+      if (categoriesError || !categoriesData) {
         console.error(categoriesError);
-
         return;
       }
 
       const expenses = expenseData as Expense[];
-
       const categories = categoriesData as Category[];
 
       // Total Expense
       const total = expenses.reduce((sum, item) => sum + item.amount, 0);
-
       setTotalExpense(total);
 
       // Category Map
@@ -139,7 +140,7 @@ export default function ReportsPage() {
 
       setCategoryData(categoryResult);
 
-      // Monthly Report
+      // Monthly Chart Data
       const groupedMonths: Record<string, number> = {};
 
       expenses.forEach((item) => {
@@ -161,6 +162,59 @@ export default function ReportsPage() {
       );
 
       setMonthlyData(monthlyResult);
+
+      // Monthly History Table
+      const groupedMonthYears: Record<
+        string,
+        {
+          total: number;
+          timestamp: number;
+        }
+      > = {};
+
+      expenses.forEach((item) => {
+        const date = new Date(item.expense_date);
+
+        const key = `${date.getFullYear()}-${date.getMonth()}`;
+
+        const displayMonth = date.toLocaleString(
+          language === "bn" ? "bn-BD" : "en-US",
+          {
+            month: "long",
+            year: "numeric",
+          }
+        );
+
+        if (!groupedMonthYears[key]) {
+          groupedMonthYears[key] = {
+            total: 0,
+            timestamp: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              1
+            ).getTime(),
+          };
+        }
+
+        groupedMonthYears[key].total += item.amount;
+
+        (groupedMonthYears[key] as any).displayMonth = displayMonth;
+      });
+
+      const monthlyHistoryResult = Object.values(groupedMonthYears)
+        .map((item: any) => ({
+          monthYear: item.displayMonth,
+          total: item.total,
+          timestamp: item.timestamp,
+        }))
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .slice(0, 12)
+        .map(({ monthYear, total }) => ({
+          monthYear,
+          total,
+        }));
+
+      setMonthlyHistory(monthlyHistoryResult);
     } catch (error) {
       console.error(error);
     } finally {
@@ -185,6 +239,46 @@ export default function ReportsPage() {
           <p className="text-sm opacity-70">{messages.reports.totalExpense}</p>
 
           <h2 className="mt-2 text-5xl font-bold">৳ {totalExpense}</h2>
+        </div>
+      </div>
+
+      {/* Monthly Expense History */}
+      <div className="px-4">
+        <div className="rounded-3xl border bg-white p-4 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold">
+            {messages.reports.monthlyHistory}
+          </h2>
+
+          {monthlyHistory.length === 0 ? (
+            <p className="text-sm text-gray-500">
+              {messages.reports.noMonthlyData}
+            </p>
+          ) : (
+            <div className="overflow-hidden rounded-2xl border">
+              {/* Header */}
+              <div className="grid grid-cols-2 bg-gray-50 px-4 py-3 text-sm font-semibold">
+                <span>{messages.reports.month}</span>
+
+                <span className="text-right">
+                  {messages.reports.totalExpense}
+                </span>
+              </div>
+
+              {/* Rows */}
+              {monthlyHistory.map((item) => (
+                <div
+                  key={item.monthYear}
+                  className="grid grid-cols-2 border-t px-4 py-3 text-sm"
+                >
+                  <span>{item.monthYear}</span>
+
+                  <span className="text-right font-medium">
+                    ৳ {item.total.toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

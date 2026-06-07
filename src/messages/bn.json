@@ -8,7 +8,7 @@
 
   "dashboard": {
     "title": "ড্যাশবোর্ড",
-    "subtitle": "অটোএক্সপেন্সে স্বাগতম",
+    "subtitle": "স্বাগতম",
     "monthlyExpense": "মাসিক খরচ",
     "currentMonthExpense": "বর্তমান মাসের মোট খরচ",
     "totalExpenses": "মোট খরচ",
@@ -28,6 +28,7 @@
     "expenseAmount": "খরচের পরিমাণ",
     "category": "ক্যাটাগরি",
     "date": "তারিখ",
+    "changeDate": "তারিখ পরিবর্তন করুন",
     "note": "নোট",
     "notFound": "খরচ পাওয়া যায়নি",
     "deleteConfirm": "এই খরচ মুছে ফেলবেন?",
@@ -44,7 +45,16 @@
     "expenseAdded": "খরচ সফলভাবে যোগ হয়েছে",
     "userNotFound": "ব্যবহারকারী পাওয়া যায়নি",
     "expenseFailed": "খরচ যোগ করা যায়নি",
-    "somethingWrong": "কিছু সমস্যা হয়েছে"
+    "somethingWrong": "কিছু সমস্যা হয়েছে",
+    "editTitle": "খরচ সম্পাদনা করুন",
+    "editSubtitle": "খরচের তথ্য আপডেট করুন",
+    "updateExpense": "খরচ আপডেট করুন",
+    "updating": "আপডেট করা হচ্ছে...",
+    "expenseUpdated": "খরচ সফলভাবে আপডেট হয়েছে",
+    "invalidAmount": "অনুগ্রহ করে সঠিক পরিমাণ লিখুন",
+    "selectCategoryValidation": "অনুগ্রহ করে একটি ক্যাটাগরি নির্বাচন করুন",
+    "loadingExpense": "লোড হচ্ছে...",
+    "updateFailed": "খরচ আপডেট করা যায়নি"
   },
 
   "reports": {
@@ -52,7 +62,10 @@
     "subtitle": "খরচ বিশ্লেষণ",
     "totalExpense": "মোট খরচ",
     "monthlyExpenses": "মাসিক খরচ",
-    "categoryBreakdown": "ক্যাটাগরি বিশ্লেষণ"
+    "categoryBreakdown": "ক্যাটাগরি বিশ্লেষণ",
+    "monthlyHistory": "মাসভিত্তিক খরচের ইতিহাস",
+    "month": "মাস",
+    "noMonthlyData": "কোন মাসিক তথ্য পাওয়া যায়নি"
   },
 
   "settings": {

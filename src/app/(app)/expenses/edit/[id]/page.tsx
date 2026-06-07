@@ -2,18 +2,15 @@
 
 import { useEffect, useState } from "react";
 
-import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 
-import {
-  ArrowLeft,
-} from "lucide-react";
-
-import {
-  useParams,
-  useRouter,
-} from "next/navigation";
+import { CalendarDays } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/browser-client";
+
+import PageHeader from "@/components/layout/page-header";
+
+import { useLanguage } from "@/context/language-context";
 
 const supabase = createClient();
 
@@ -27,73 +24,84 @@ export default function EditExpensePage() {
 
   const router = useRouter();
 
-  const [categories, setCategories] =
-    useState<Category[]>([]);
+  const { messages, language } = useLanguage();
 
-  const [amount, setAmount] =
-    useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
 
-  const [categoryId, setCategoryId] =
-    useState("");
+  const [amount, setAmount] = useState("");
 
-  const [note, setNote] =
-    useState("");
+  const [categoryId, setCategoryId] = useState("");
 
-  const [loading, setLoading] =
-    useState(true);
+  const [note, setNote] = useState("");
 
-  const [saving, setSaving] =
-    useState(false);
+  const [expenseDate, setExpenseDate] = useState(
+    new Date().toISOString().split("T")[0]
+  );
 
-  const [message, setMessage] =
-    useState("");
+  const [loading, setLoading] = useState(true);
 
-  const [messageType, setMessageType] =
-    useState<"success" | "error" | "">("");
+  const [saving, setSaving] = useState(false);
+
+  const [message, setMessage] = useState("");
+
+  const [messageType, setMessageType] = useState<"success" | "error" | "">("");
 
   useEffect(() => {
     loadData();
   }, []);
 
-  async function loadData() {
-    setLoading(true);
+  function formatDate(date: string) {
+    return new Date(date).toLocaleDateString(
+      language === "bn" ? "bn-BD" : "en-US",
+      {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }
+    );
+  }
 
-    // Categories
-    const { data: categoryData } =
-      await supabase
+  async function loadData() {
+    try {
+      setLoading(true);
+
+      const { data: categoryData } = await supabase
         .from("expense_categories")
         .select("id, name")
-        .eq("is_active", true);
+        .eq("is_active", true)
+        .order("name");
 
-    setCategories(categoryData || []);
+      setCategories(categoryData || []);
 
-    // Expense
-    const { data: expenseData, error } =
-      await supabase
+      const { data: expenseData, error } = await supabase
         .from("expenses")
-        .select(`
+        .select(
+          `
           amount,
           category_id,
-          note
-        `)
+          note,
+          expense_date
+        `
+        )
         .eq("id", params.id)
         .single();
 
-    if (!error && expenseData) {
-      setAmount(
-        String(expenseData.amount)
-      );
+      if (!error && expenseData) {
+        setAmount(String(expenseData.amount));
 
-      setCategoryId(
-        expenseData.category_id
-      );
+        setCategoryId(expenseData.category_id);
 
-      setNote(
-        expenseData.note || ""
-      );
+        setNote(expenseData.note || "");
+
+        setExpenseDate(
+          expenseData.expense_date || new Date().toISOString().split("T")[0]
+        );
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   async function handleUpdate() {
@@ -102,41 +110,58 @@ export default function EditExpensePage() {
 
       setMessage("");
 
-      const { error } =
-        await supabase
-          .from("expenses")
-          .update({
-            amount: Number(amount),
-            category_id: categoryId,
-            note,
-          })
-          .eq("id", params.id);
+      setMessageType("");
 
-      if (error) {
-        setMessage(error.message);
+      if (!amount || Number(amount) <= 0) {
+        setMessage(messages.expenses.invalidAmount);
 
         setMessageType("error");
 
         return;
       }
 
-      setMessage(
-        "Expense updated successfully"
-      );
+      if (!categoryId) {
+        setMessage(messages.expenses.selectCategoryValidation);
+
+        setMessageType("error");
+
+        return;
+      }
+
+      const { error } = await supabase
+        .from("expenses")
+        .update({
+          amount: Number(amount),
+
+          category_id: categoryId,
+
+          note,
+
+          expense_date: expenseDate,
+        })
+        .eq("id", params.id);
+
+      if (error) {
+        console.error(error);
+
+        setMessage(messages.expenses.updateFailed);
+
+        setMessageType("error");
+
+        return;
+      }
+
+      setMessage(messages.expenses.expenseUpdated);
 
       setMessageType("success");
 
       setTimeout(() => {
-        router.push(
-          `/expenses/${params.id}`
-        );
+        router.push(`/expenses/${params.id}`);
       }, 1000);
     } catch (err) {
-      console.log(err);
+      console.error(err);
 
-      setMessage(
-        "Something went wrong"
-      );
+      setMessage(messages.expenses.somethingWrong);
 
       setMessageType("error");
     } finally {
@@ -145,36 +170,17 @@ export default function EditExpensePage() {
   }
 
   if (loading) {
-    return (
-      <div className="p-4">
-        Loading...
-      </div>
-    );
+    return <div className="p-4">{messages.expenses.loadingExpense}</div>;
   }
 
   return (
-    <div className="space-y-6 p-4">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <Link
-          href={`/expenses/${params.id}`}
-          className="rounded-full border p-2"
-        >
-          <ArrowLeft size={18} />
-        </Link>
+    <div className="space-y-6 p-4 pb-28">
+      <PageHeader
+        title={messages.expenses.editTitle}
+        subtitle={messages.expenses.editSubtitle}
+        backHref={`/expenses/${params.id}`}
+      />
 
-        <div>
-          <h1 className="text-3xl font-bold">
-            Edit Expense
-          </h1>
-
-          <p className="text-gray-500">
-            Update expense details
-          </p>
-        </div>
-      </div>
-
-      {/* Message */}
       {message && (
         <div
           className={`rounded-2xl p-4 text-sm font-medium ${
@@ -187,65 +193,77 @@ export default function EditExpensePage() {
         </div>
       )}
 
-      {/* Form */}
-      <div className="space-y-4 rounded-3xl border bg-white p-4 shadow-sm">
+      <div className="space-y-5 rounded-3xl border bg-white p-5 shadow-sm">
         {/* Amount */}
         <div>
           <label className="mb-2 block text-sm font-medium">
-            Amount
+            {messages.expenses.amount}
           </label>
 
           <input
             type="number"
-            className="w-full rounded-2xl border p-4 outline-none"
+            placeholder={messages.expenses.enterAmount}
+            className="w-full rounded-2xl border p-4 transition outline-none focus:border-black"
             value={amount}
-            onChange={(e) =>
-              setAmount(e.target.value)
-            }
+            onChange={(e) => setAmount(e.target.value)}
           />
         </div>
 
         {/* Category */}
         <div>
           <label className="mb-2 block text-sm font-medium">
-            Category
+            {messages.expenses.category}
           </label>
 
           <select
-            className="w-full rounded-2xl border p-4 outline-none"
+            className="w-full rounded-2xl border p-4 transition outline-none focus:border-black"
             value={categoryId}
-            onChange={(e) =>
-              setCategoryId(e.target.value)
-            }
+            onChange={(e) => setCategoryId(e.target.value)}
           >
-            <option value="">
-              Select Category
-            </option>
+            <option value="">{messages.expenses.selectCategory}</option>
 
             {categories.map((category) => (
-              <option
-                key={category.id}
-                value={category.id}
-              >
+              <option key={category.id} value={category.id}>
                 {category.name}
               </option>
             ))}
           </select>
         </div>
 
+        {/* Date */}
+        <div>
+          <label className="mb-2 block text-sm font-medium">
+            {messages.expenses.date}
+          </label>
+
+          <label className="relative block cursor-pointer">
+            <input
+              type="date"
+              value={expenseDate}
+              onChange={(e) => setExpenseDate(e.target.value)}
+              className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            />
+
+            <div className="flex items-center justify-between rounded-2xl border bg-gray-50 px-4 py-4 transition hover:bg-gray-100 active:bg-gray-100">
+              <p className="text-lg font-medium">{formatDate(expenseDate)}</p>
+
+              <CalendarDays size={18} className="shrink-0 text-gray-500" />
+            </div>
+          </label>
+        </div>
+
         {/* Note */}
         <div>
           <label className="mb-2 block text-sm font-medium">
-            Note
+            {messages.expenses.note}
           </label>
 
           <textarea
+            placeholder={messages.expenses.optionalNote}
             rows={4}
-            className="w-full rounded-2xl border p-4 outline-none"
+            className="w-full rounded-2xl border p-4 transition outline-none focus:border-black"
             value={note}
-            onChange={(e) =>
-              setNote(e.target.value)
-            }
+            onChange={(e) => setNote(e.target.value)}
           />
         </div>
 
@@ -254,11 +272,11 @@ export default function EditExpensePage() {
           type="button"
           onClick={handleUpdate}
           disabled={saving}
-          className="w-full rounded-2xl bg-black p-4 font-medium text-white disabled:opacity-50"
+          className="w-full rounded-2xl bg-black p-4 font-medium text-white transition active:scale-[0.98] disabled:opacity-50"
         >
           {saving
-            ? "Updating..."
-            : "Update Expense"}
+            ? messages.expenses.updating
+            : messages.expenses.updateExpense}
         </button>
       </div>
     </div>

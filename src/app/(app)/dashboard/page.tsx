@@ -39,10 +39,6 @@ export default function DashboardPage() {
 
   const [monthlyExpense, setMonthlyExpense] = useState(0);
 
-  const [totalExpenses, setTotalExpenses] = useState(0);
-
-  const [totalCategories, setTotalCategories] = useState(0);
-
   const [myTotal, setMyTotal] = useState(0);
 
   const [memberTotals, setMemberTotals] = useState<MemberTotal[]>([]);
@@ -50,6 +46,8 @@ export default function DashboardPage() {
   const [recentExpenses, setRecentExpenses] = useState<Expense[]>([]);
 
   const [loading, setLoading] = useState(true);
+
+  const [userFullName, setUserFullName] = useState("");
 
   useEffect(() => {
     loadDashboard();
@@ -102,28 +100,6 @@ export default function DashboardPage() {
 
       setMonthlyExpense(monthlyTotal);
 
-      // Expense Count
-      const { count: expenseCount } = await supabase
-        .from("expenses")
-        .select("*", {
-          count: "exact",
-          head: true,
-        })
-        .eq("is_deleted", false);
-
-      setTotalExpenses(expenseCount || 0);
-
-      // Category Count
-      const { count: categoryCount } = await supabase
-        .from("expense_categories")
-        .select("*", {
-          count: "exact",
-          head: true,
-        })
-        .eq("is_active", true);
-
-      setTotalCategories(categoryCount || 0);
-
       // Recent Expenses
       const { data: recentData } = await supabase
         .from("expenses")
@@ -149,10 +125,20 @@ export default function DashboardPage() {
         })
         .limit(5);
 
+      console.log(recentData); //#####
+
       setRecentExpenses((recentData || []) as Expense[]);
 
-      // My Spending
+      // My Spending + User Name
       if (user) {
+        const { data: userProfile } = await supabase
+          .from("users")
+          .select("full_name")
+          .eq("id", user.id)
+          .single();
+
+        setUserFullName(userProfile?.full_name || "");
+
         const { data: myExpenses } = await supabase
           .from("expenses")
           .select("amount")
@@ -205,7 +191,11 @@ export default function DashboardPage() {
       {/* Header */}
       <PageHeader
         title={messages.dashboard.title}
-        subtitle={messages.dashboard.subtitle}
+        subtitle={
+          userFullName
+            ? `${messages.dashboard.subtitle} ${userFullName}`
+            : messages.dashboard.subtitle
+        }
       />
 
       {/* Monthly Expense */}
