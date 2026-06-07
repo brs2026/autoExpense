@@ -71,7 +71,15 @@ export default function ExpenseDetailsPage() {
       .single();
 
     if (!error && data) {
-      setExpense(data);
+      const formattedExpense: Expense = {
+        ...data,
+
+        expense_categories: Array.isArray(data.expense_categories)
+          ? (data.expense_categories[0] ?? null)
+          : data.expense_categories,
+      };
+
+      setExpense(formattedExpense);
 
       // Load receipt signed URL
       if (data.receipt_url) {

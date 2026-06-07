@@ -56,6 +56,8 @@
     "loadingExpense": "লোড হচ্ছে...",
     "updateFailed": "খরচ আপডেট করা যায়নি",
     "receipt": "রসিদ",
+    "noReceipt": "কোনো রসিদ আপলোড করা হয়নি",
+    "tapToView": "বড় করে দেখতে ট্যাপ করুন",
     "attachReceipt": "রসিদ সংযুক্ত করুন",
     "receiptOptional": "ঐচ্ছিক",
     "receiptAttached": "রসিদ সংযুক্ত হয়েছে",
