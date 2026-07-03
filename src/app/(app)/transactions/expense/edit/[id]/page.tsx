@@ -178,7 +178,7 @@ export default function EditExpensePage() {
       <PageHeader
         title={messages.expenses.editTitle}
         subtitle={messages.expenses.editSubtitle}
-        backHref={`/expenses/${params.id}`}
+        backHref={`/transactions/expense/${params.id}`}
       />
 
       {message && (

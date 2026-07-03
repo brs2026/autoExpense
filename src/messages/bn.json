@@ -1,7 +1,7 @@
 {
   "nav": {
     "home": "হোম",
-    "expenses": "খরচ",
+    "transactions": "লেনদেন",
     "reports": "রিপোর্ট",
     "settings": "সেটিংস"
   },
@@ -13,10 +13,12 @@
     "currentMonthExpense": "বর্তমান মাসের মোট খরচ",
     "totalExpenses": "মোট খরচ",
     "categories": "ক্যাটাগরি",
-    "recentExpenses": "সাম্প্রতিক খরচ",
+    "recentTransactions": "সাম্প্রতিক লেনদেন",
     "noExpenses": "এখনো কোনো খরচ যোগ করা হয়নি",
     "yourSpending": "আপনার খরচ",
-    "memberContribution": "সদস্যদের খরচ"
+    "memberContribution": "সদস্যদের খরচ",
+    "monthlyIncome": "মাসিক আয়",
+    "currentMonthIncome": "বর্তমান মাসের মোট আয়"
   },
 
   "expenses": {
@@ -110,5 +112,71 @@
     "enable": "সক্রিয় করুন",
     "users": "ব্যবহারকারী",
     "usersSubtitle": "অ্যাপ ব্যবহারকারী পরিচালনা করুন"
+  },
+
+  "transactions": {
+    "title": "লেনদেন",
+    "subtitle": "আপনার লেনদেন পরিচালনা করুন",
+    "all": "সব",
+    "expense": "খরচ",
+    "income": "আয়",
+    "addExpense": "খরচ",
+    "addIncome": "আয়",
+    "noTransactions": "কোন লেনদেন পাওয়া যায়নি",
+    "spentBy": "খরচ করেছেন",
+    "receivedBy": "গ্রহণ করেছেন"
+  },
+
+  "income": {
+    "title": "আয়",
+
+    "addTitle": "আয় যোগ করুন",
+    "addSubtitle": "নতুন আয়ের তথ্য তৈরি করুন",
+
+    "detailsTitle": "আয়ের বিস্তারিত",
+    "detailsSubtitle": "আয়ের তথ্য দেখুন",
+
+    "editTitle": "আয় সম্পাদনা করুন",
+    "editSubtitle": "আয়ের তথ্য আপডেট করুন",
+
+    "amount": "পরিমাণ",
+    "incomeAmount": "আয়ের পরিমাণ",
+    "enterAmount": "টাকার পরিমাণ লিখুন",
+
+    "source": "উৎস",
+    "selectSource": "উৎস নির্বাচন করুন",
+
+    "date": "তারিখ",
+
+    "note": "নোট",
+    "optionalNote": "ঐচ্ছিক নোট লিখুন",
+
+    "saveIncome": "আয় যোগ করুন",
+    "saving": "সেভ হচ্ছে...",
+
+    "updateIncome": "আয় আপডেট করুন",
+    "updating": "আপডেট করা হচ্ছে...",
+
+    "incomeAdded": "আয় সফলভাবে যোগ হয়েছে",
+    "incomeUpdated": "আয় সফলভাবে আপডেট হয়েছে",
+
+    "invalidAmount": "অনুগ্রহ করে সঠিক পরিমাণ লিখুন",
+    "selectSourceValidation": "অনুগ্রহ করে একটি উৎস নির্বাচন করুন",
+
+    "userNotFound": "ব্যবহারকারী পাওয়া যায়নি",
+    "incomeFailed": "আয় যোগ করা যায়নি",
+    "updateFailed": "আয় আপডেট করা যায়নি",
+    "somethingWrong": "কিছু সমস্যা হয়েছে",
+
+    "deleteConfirm": "এই আয় মুছে ফেলবেন?",
+    "notFound": "আয় পাওয়া যায়নি",
+
+    "receivedBy": "গ্রহণ করেছেন",
+
+    "loadingIncome": "আয় লোড হচ্ছে...",
+
+    "income": "আয়",
+
+    "spentBy": "ব্যয় করেছেন"
   }
 }

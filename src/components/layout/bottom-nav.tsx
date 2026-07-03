@@ -19,11 +19,11 @@ const items = [
     href: "/dashboard",
     icon: LayoutDashboard,
   },
-  {
-    key: "expenses",
-    href: "/expenses",
-    icon: Receipt,
-  },
+ {
+  key: "transactions",
+  href: "/transactions",
+  icon: Receipt,
+},
   {
     key: "reports",
     href: "/reports",

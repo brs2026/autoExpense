@@ -204,7 +204,7 @@ export default function AddExpensePage() {
       setExpenseDate(new Date().toISOString().split("T")[0]);
 
       setTimeout(() => {
-        router.push("/expenses");
+        router.push("/transactions");
       }, 1000);
     } catch (err) {
       console.log(err);
@@ -222,7 +222,7 @@ export default function AddExpensePage() {
       <PageHeader
         title={messages.expenses.addTitle}
         subtitle={messages.expenses.addSubtitle}
-        backHref="/expenses"
+        backHref="/transactions"
       />
 
       {message && (

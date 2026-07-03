@@ -1,7 +1,7 @@
 {
   "nav": {
     "home": "Home",
-    "expenses": "Expenses",
+    "transactions": "Transactions",
     "reports": "Reports",
     "settings": "Settings"
   },
@@ -10,13 +10,15 @@
     "title": "Dashboard",
     "subtitle": "Welcome",
     "monthlyExpense": "Monthly Expense",
-    "currentMonthExpense": "Current month total expense",
+    "currentMonthExpense": "Current Month Total Expense",
     "totalExpenses": "Total Expenses",
     "categories": "Categories",
-    "recentExpenses": "Recent Expenses",
+    "recentTransactions": "Recent Transactions",
     "noExpenses": "No expenses added yet",
     "yourSpending": "Your Spending",
-    "memberContribution": "Member Contributions"
+    "memberContribution": "Member Contributions",
+    "monthlyIncome": "Monthly Income",
+    "currentMonthIncome": "Current Month Income"
   },
 
   "expenses": {
@@ -93,7 +95,7 @@
   },
 
   "common": {
-    "loading": "লোড হচ্ছে..."
+    "loading": "Loading..."
   },
 
   "users": {
@@ -108,5 +110,71 @@
     "disabled": "Disabled",
     "disable": "Disable",
     "enable": "Enable"
+  },
+
+  "transactions": {
+    "title": "Transactions",
+    "subtitle": "Manage your transactions",
+    "all": "All",
+    "expense": "Expense",
+    "income": "Income",
+    "addExpense": "Add Expense",
+    "addIncome": "Add Income",
+    "noTransactions": "No transactions found",
+    "spentBy": "Spent by",
+    "receivedBy": "Received by"
+  },
+
+  "income": {
+    "title": "Income",
+
+    "addTitle": "Add Income",
+    "addSubtitle": "Create a new income record",
+
+    "detailsTitle": "Income Details",
+    "detailsSubtitle": "View income information",
+
+    "editTitle": "Edit Income",
+    "editSubtitle": "Update income details",
+
+    "amount": "Amount",
+    "incomeAmount": "Income Amount",
+    "enterAmount": "Enter amount",
+
+    "source": "Source",
+    "selectSource": "Select Source",
+
+    "date": "Date",
+
+    "note": "Note",
+    "optionalNote": "Optional note",
+
+    "saveIncome": "Add Income",
+    "saving": "Saving...",
+
+    "updateIncome": "Update Income",
+    "updating": "Updating...",
+
+    "incomeAdded": "Income added successfully",
+    "incomeUpdated": "Income updated successfully",
+
+    "invalidAmount": "Please enter a valid amount",
+    "selectSourceValidation": "Please select a source",
+
+    "userNotFound": "User not found",
+    "incomeFailed": "Failed to add income",
+    "updateFailed": "Failed to update income",
+    "somethingWrong": "Something went wrong",
+
+    "deleteConfirm": "Delete this income?",
+    "notFound": "Income not found",
+
+    "loadingIncome": "Loading income...",
+
+    "income": "Income",
+
+    "spentBy": "Spent by",
+
+    "receivedBy": "Received by"
   }
 }

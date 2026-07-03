@@ -164,7 +164,7 @@ export default function ExpenseDetailsPage() {
             {/* Left: back button + title */}
             <div className="flex items-center gap-3">
               <Link
-                href="/expenses"
+                href="/transactions"
                 className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-gray-100 transition hover:bg-gray-200"
               >
                 <ChevronLeft size={20} />
@@ -184,7 +184,7 @@ export default function ExpenseDetailsPage() {
             {canManage && (
               <div className="flex gap-2">
                 <Link
-                  href={`/expenses/edit/${expense.id}`}
+                  href={`/transactions/expense/edit/${expense.id}`}
                   className="flex h-9 w-9 items-center justify-center rounded-xl bg-gray-100 transition hover:bg-gray-200"
                 >
                   <Pencil size={16} />
