@@ -133,7 +133,7 @@ export default function ExpenseDetailsPage() {
       return;
     }
 
-    router.push("/expenses");
+    router.push("/transactions");
   }
 
   function formatDate(date: string) {
