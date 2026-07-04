@@ -120,8 +120,8 @@
     "all": "সব",
     "expense": "ব্যয়",
     "income": "আয়",
-    "addExpense": "ব্যয় এ্যাড করুন",
-    "addIncome": "আয় এ্যাড করুন",
+    "addExpense": "ব্যয় অ্যাড করুন",
+    "addIncome": "আয় অ্যাড করুন",
     "noTransactions": "কোন লেনদেন পাওয়া যায়নি",
     "spentBy": "খরচ করেছেন",
     "receivedBy": "গ্রহণ করেছেন"

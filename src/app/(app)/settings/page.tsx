@@ -75,23 +75,6 @@ export default function SettingsPage() {
     }
   }
 
-  async function addCategory() {
-    if (!newCategory.trim()) return;
-
-    const { error } = await supabase.from("expense_categories").insert({
-      name: newCategory,
-    });
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setNewCategory("");
-
-    loadCategories();
-  }
-
   async function handleLogout() {
     await supabase.auth.signOut();
 
@@ -124,43 +107,6 @@ export default function SettingsPage() {
                 {profile?.role || "-"}
               </p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Categories */}
-      <div className="px-4">
-        <div className="rounded-3xl border bg-white p-5 shadow-sm">
-          <h2 className="text-xl font-semibold">
-            {messages.settings.categories}
-          </h2>
-
-          <div className="mt-5 flex gap-3">
-            <input
-              type="text"
-              placeholder={messages.settings.newCategory}
-              value={newCategory}
-              onChange={(e) => setNewCategory(e.target.value)}
-              className="flex-1 rounded-2xl border px-4 py-3 outline-none"
-            />
-
-            <button
-              onClick={addCategory}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-black text-white transition active:scale-95"
-            >
-              <Plus size={20} />
-            </button>
-          </div>
-
-          <div className="mt-5 space-y-3">
-            {categories.map((category) => (
-              <div
-                key={category.id}
-                className="rounded-2xl bg-gray-50 px-4 py-4"
-              >
-                {category.name}
-              </div>
-            ))}
           </div>
         </div>
       </div>

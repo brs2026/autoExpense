@@ -70,10 +70,10 @@ function TransactionIcon({ t }: { t: Transaction }) {
 
   return (
     <div
-      className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl"
+      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
       style={{ backgroundColor: `${visual.color}1A` }}
     >
-      <Icon size={26} style={{ color: visual.color }} strokeWidth={2} />
+      <Icon size={22} style={{ color: visual.color }} strokeWidth={2} />
     </div>
   );
 }
@@ -331,7 +331,7 @@ export default function TransactionsPage() {
       </div>
 
       {/* Transaction List */}
-      <div className="space-y-3 px-4">
+      <div className="space-y-3 px-3">
         {filteredTransactions.length === 0 ? (
           <div className="rounded-3xl border bg-white p-10 text-center text-gray-500 shadow-sm">
             {messages.transactions.noTransactions}
@@ -347,31 +347,31 @@ export default function TransactionsPage() {
               <Link
                 key={`${t.type}-${t.id}`}
                 href={`/transactions/${t.type}/${t.id}`}
-                className="relative flex items-center gap-4 overflow-hidden rounded-3xl border bg-white px-4 py-4 shadow-sm transition active:scale-[0.98]"
+                className="relative flex items-center overflow-hidden rounded-3xl border bg-white shadow-sm transition active:scale-[0.98]"
               >
                 {/* Dotted pattern — right side decoration */}
                 <div
-                  className="pointer-events-none absolute top-0 right-0 h-full w-28 opacity-40"
+                  className="pointer-events-none absolute top-0 right-0 h-full w-32 opacity-40"
                   style={{
                     backgroundImage: `radial-gradient(circle, ${dotColor} 1.5px, transparent 1.5px)`,
                     backgroundSize: "10px 10px",
                   }}
                 />
 
-                {/* Left colored vertical bar + icon */}
-                <div className="flex shrink-0 items-center gap-3">
+                {/* Icon first, then thin vertical bar */}
+                <div className="flex shrink-0 items-center gap-1 py-4 pl-4">
+                  <TransactionIcon t={t} />
                   <div
-                    className="h-12 w-1 rounded-full"
+                    className="h-25 w-[1px] rounded-full opacity-60"
                     style={{ backgroundColor: accentColor }}
                   />
-                  <TransactionIcon t={t} />
                 </div>
 
                 {/* Content */}
-                <div className="relative min-w-0 flex-1">
+                <div className="relative min-w-0 flex-1 px-3 py-4">
                   {/* Type Badge */}
                   <span
-                    className="inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase"
+                    className="inline-block rounded-full px-2.5 py-0.5 text-[7px] font-bold tracking-wider uppercase"
                     style={{ backgroundColor: accentBg, color: accentColor }}
                   >
                     {isIncome
@@ -380,14 +380,14 @@ export default function TransactionsPage() {
                   </span>
 
                   {/* Title */}
-                  <h2 className="mt-1 truncate text-[17px] font-bold text-gray-900">
+                  <h2 className="mt-1 truncate text-[18px] font-bold text-gray-900">
                     {t.categoryName}
                   </h2>
 
                   {/* Person */}
                   <div className="mt-1 flex items-center gap-1.5">
-                    <User size={13} className="shrink-0 text-gray-400" />
-                    <p className="text-xs text-gray-500">
+                    <User size={12} className="shrink-0 text-gray-400" />
+                    <p className="truncate text-[13px] text-gray-500">
                       {isIncome
                         ? messages.transactions.receivedBy
                         : messages.transactions.spentBy}
@@ -400,31 +400,33 @@ export default function TransactionsPage() {
 
                   {/* Date */}
                   <div className="mt-1.5 flex items-center gap-1.5">
-                    <Calendar size={13} className="shrink-0 text-gray-400" />
-                    <p className="text-xs text-gray-400">
+                    <Calendar size={12} className="shrink-0 text-gray-400" />
+                    <p className="text-[12px] text-gray-400">
                       {formatCardDate(t.date)}
                     </p>
                   </div>
                 </div>
 
-                {/* Amount + Chevron with colored bg */}
-                <div className="relative flex shrink-0 items-center gap-2">
+                {/* Amount */}
+                <div className="relative shrink-0 px-3 py-4">
                   <p
-                    className="text-lg font-bold"
+                    className="text-[18px] font-bold"
                     style={{ color: accentColor }}
                   >
                     {isIncome ? "+" : "-"}৳ {t.amount.toLocaleString()}
                   </p>
-                  <div
-                    className="flex h-8 w-8 items-center justify-center rounded-full"
-                    style={{ backgroundColor: accentBg }}
-                  >
-                    <ChevronRight
-                      size={16}
-                      style={{ color: accentColor }}
-                      strokeWidth={2.5}
-                    />
-                  </div>
+                </div>
+
+                {/* Half-circle chevron flush to right edge */}
+                <div
+                  className="flex h-full min-h-[90px] w-10 shrink-0 items-center justify-center rounded-l-full"
+                  style={{ backgroundColor: accentBg }}
+                >
+                  <ChevronRight
+                    size={18}
+                    style={{ color: accentColor }}
+                    strokeWidth={2.5}
+                  />
                 </div>
               </Link>
             );
