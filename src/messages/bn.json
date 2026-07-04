@@ -118,10 +118,10 @@
     "title": "লেনদেন",
     "subtitle": "আপনার লেনদেন পরিচালনা করুন",
     "all": "সব",
-    "expense": "খরচ",
+    "expense": "ব্যয়",
     "income": "আয়",
-    "addExpense": "খরচ",
-    "addIncome": "আয়",
+    "addExpense": "ব্যয় এ্যাড করুন",
+    "addIncome": "আয় এ্যাড করুন",
     "noTransactions": "কোন লেনদেন পাওয়া যায়নি",
     "spentBy": "খরচ করেছেন",
     "receivedBy": "গ্রহণ করেছেন"

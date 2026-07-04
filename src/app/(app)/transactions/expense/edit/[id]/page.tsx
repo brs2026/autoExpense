@@ -156,7 +156,7 @@ export default function EditExpensePage() {
       setMessageType("success");
 
       setTimeout(() => {
-        router.push(`/expenses/${params.id}`);
+        router.push(`/transactions/expense/${params.id}`);
       }, 1000);
     } catch (err) {
       console.error(err);
