@@ -351,7 +351,7 @@ export default function TransactionsPage() {
               >
                 {/* Dotted pattern — right side decoration */}
                 <div
-                  className="pointer-events-none absolute top-0 right-0 h-full w-32 opacity-40"
+                  className="pointer-events-none absolute top-0 right-0 h-full w-32 opacity-30"
                   style={{
                     backgroundImage: `radial-gradient(circle, ${dotColor} 1.5px, transparent 1.5px)`,
                     backgroundSize: "10px 10px",
