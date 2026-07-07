@@ -96,7 +96,8 @@
   },
 
   "common": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "vs": "vs"
   },
 
   "users": {
