@@ -4,12 +4,7 @@ import Link from "next/link";
 
 import { usePathname } from "next/navigation";
 
-import {
-  LayoutDashboard,
-  Receipt,
-  BarChart3,
-  Settings,
-} from "lucide-react";
+import { LayoutDashboard, Receipt, BarChart3, Settings } from "lucide-react";
 
 import { useLanguage } from "@/context/language-context";
 
@@ -19,11 +14,11 @@ const items = [
     href: "/dashboard",
     icon: LayoutDashboard,
   },
- {
-  key: "transactions",
-  href: "/transactions",
-  icon: Receipt,
-},
+  {
+    key: "transactions",
+    href: "/transactions",
+    icon: Receipt,
+  },
   {
     key: "reports",
     href: "/reports",
@@ -42,38 +37,24 @@ export default function BottomNav() {
   const { messages } = useLanguage();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 border-t bg-white/95 backdrop-blur">
+    <div className="fixed right-0 bottom-0 left-0 z-50 border-t bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-md items-center justify-around px-2 py-3">
         {items.map((item) => {
           const Icon = item.icon;
 
-          const active =
-            pathname === item.href;
+          const active = pathname === item.href;
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={`flex flex-col items-center gap-1 rounded-xl px-4 py-2 text-xs transition-all ${
-                active
-                  ? "text-black"
-                  : "text-gray-400"
+                active ? "text-black" : "text-gray-400"
               }`}
             >
-              <Icon
-                size={22}
-                strokeWidth={
-                  active ? 2.5 : 2
-                }
-              />
+              <Icon size={22} strokeWidth={active ? 2.5 : 2} />
 
-              <span>
-                {
-                  messages.nav[
-                    item.key as keyof typeof messages.nav
-                  ]
-                }
-              </span>
+              <span>{messages.nav[item.key as keyof typeof messages.nav]}</span>
             </Link>
           );
         })}

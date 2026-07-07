@@ -18,7 +18,8 @@
     "yourSpending": "আপনার খরচ",
     "memberContribution": "সদস্যদের খরচ",
     "monthlyIncome": "মাসিক আয়",
-    "currentMonthIncome": "বর্তমান মাসের মোট আয়"
+    "currentMonthIncome": "বর্তমান মাসের মোট আয়",
+    "monthlyProfit": "মাসিক লাভ"
   },
 
   "expenses": {

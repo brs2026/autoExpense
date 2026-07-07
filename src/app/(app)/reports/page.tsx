@@ -286,7 +286,7 @@ export default function ReportsPage() {
       <div className="px-4">
         <div className="rounded-3xl border bg-white p-4 shadow-sm">
           <h2 className="mb-4 text-lg font-semibold">
-            {messages.reports.monthlyExpenses}
+            {messages.reports.monthlyHistory}
           </h2>
 
           <div className="h-72">

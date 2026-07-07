@@ -10,6 +10,11 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    handleLogin();
+  };
+
   async function handleLogin() {
     try {
       setLoading(true);
@@ -42,7 +47,8 @@ export default function LoginPage() {
           AutoExpense Login
         </h1>
 
-        <div className="space-y-4">
+        {/* Changed from div to form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
             placeholder="Username"
@@ -60,14 +66,13 @@ export default function LoginPage() {
           />
 
           <button
-            type="button"
-            onClick={handleLogin}
+            type="submit"
             disabled={loading}
             className="w-full rounded-lg bg-black p-3 text-white"
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-        </div>
+        </form>
       </div>
     </main>
   );

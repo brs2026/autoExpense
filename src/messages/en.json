@@ -18,7 +18,8 @@
     "yourSpending": "Your Spending",
     "memberContribution": "Member Contributions",
     "monthlyIncome": "Monthly Income",
-    "currentMonthIncome": "Current Month Income"
+    "currentMonthIncome": "Current Month Total Income",
+    "monthlyProfit": "Monthly Profit"
   },
 
   "expenses": {

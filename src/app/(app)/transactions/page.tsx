@@ -51,9 +51,10 @@ const TABS: { key: "all" | TxType }[] = [
   { key: "income" },
 ];
 
-function formatCardDate(dateStr: string): string {
+function formatCardDate(dateStr: string, language: "en" | "bn"): string {
   const d = new Date(dateStr);
-  return d.toLocaleDateString("en-GB", {
+
+  return d.toLocaleDateString(language === "bn" ? "bn-BD" : "en-GB", {
     day: "numeric",
     month: "short",
     year: "numeric",
@@ -79,7 +80,7 @@ function TransactionIcon({ t }: { t: Transaction }) {
 }
 
 export default function TransactionsPage() {
-  const { messages } = useLanguage();
+  const { messages, language } = useLanguage();
 
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -94,15 +95,26 @@ export default function TransactionsPage() {
   const months = (() => {
     const result: { value: string; label: string }[] = [];
     const now = new Date();
+
     for (let i = 0; i < 12; i++) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      const label = d.toLocaleDateString(undefined, {
-        month: "long",
-        year: "numeric",
-      });
+
+      const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
+
+      const label = d.toLocaleDateString(
+        language === "bn" ? "bn-BD" : "en-US",
+        {
+          month: "long",
+          year: "numeric",
+        }
+      );
+
       result.push({ value, label });
     }
+
     return result;
   })();
 
@@ -339,7 +351,7 @@ export default function TransactionsPage() {
         ) : (
           filteredTransactions.map((t) => {
             const isIncome = t.type === "income";
-            const accentColor = isIncome ? "#16a34a" : "#ef4444";
+            const accentColor = isIncome ? "#16a34a" : "#E85D75";
             const accentBg = isIncome ? "#dcfce7" : "#fee2e2";
             const dotColor = isIncome ? "#bbf7d0" : "#fecaca";
 
@@ -351,7 +363,7 @@ export default function TransactionsPage() {
               >
                 {/* Dotted pattern — right side decoration */}
                 <div
-                  className="pointer-events-none absolute top-0 right-0 h-full w-32 opacity-30"
+                  className="pointer-events-none absolute top-0 right-0 h-full w-28 opacity-30"
                   style={{
                     backgroundImage: `radial-gradient(circle, ${dotColor} 1.5px, transparent 1.5px)`,
                     backgroundSize: "10px 10px",
@@ -386,7 +398,7 @@ export default function TransactionsPage() {
 
                   {/* Person */}
                   <div className="mt-1 flex items-center gap-1.5">
-                    <User size={12} className="shrink-0 text-gray-400" />
+                    <User size={13} className="shrink-0 text-gray-400" />
                     <p className="truncate text-[13px] text-gray-500">
                       {isIncome
                         ? messages.transactions.receivedBy
@@ -399,10 +411,10 @@ export default function TransactionsPage() {
                   </div>
 
                   {/* Date */}
-                  <div className="mt-1.5 flex items-center gap-1.5">
-                    <Calendar size={12} className="shrink-0 text-gray-400" />
-                    <p className="text-[12px] text-gray-400">
-                      {formatCardDate(t.date)}
+                  <div className="mt-1.5 flex items-center gap-1.5 font-semibold">
+                    <Calendar size={14} className="shrink-0 text-gray-400" />
+                    <p className="text-[14px] text-gray-400">
+                      {formatCardDate(t.date, language)}
                     </p>
                   </div>
                 </div>
@@ -410,7 +422,7 @@ export default function TransactionsPage() {
                 {/* Amount */}
                 <div className="relative shrink-0 px-3 py-4">
                   <p
-                    className="text-[18px] font-bold"
+                    className="text-[20px] font-bold"
                     style={{ color: accentColor }}
                   >
                     {isIncome ? "+" : "-"}৳ {t.amount.toLocaleString()}
@@ -419,11 +431,11 @@ export default function TransactionsPage() {
 
                 {/* Half-circle chevron flush to right edge */}
                 <div
-                  className="flex h-full min-h-[90px] w-10 shrink-0 items-center justify-center rounded-l-full"
+                  className="flex h-full min-h-[30px] w-7 shrink-0 items-center justify-center rounded-l-full"
                   style={{ backgroundColor: accentBg }}
                 >
                   <ChevronRight
-                    size={18}
+                    size={25}
                     style={{ color: accentColor }}
                     strokeWidth={2.5}
                   />

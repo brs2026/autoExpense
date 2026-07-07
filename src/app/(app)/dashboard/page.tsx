@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 
-import { ChevronDown } from "lucide-react";
+import {
+  ChevronDown,
+  Wallet,
+  Calendar,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react";
 
 import { createClient } from "@/lib/supabase/browser-client";
 
@@ -47,6 +53,22 @@ function getMonthRange(month: string): {
   return { startDate, endDate };
 }
 
+function getPreviousMonth(month: string): string {
+  const [year, mon] = month.split("-").map(Number);
+  const prevMon = mon === 1 ? 12 : mon - 1;
+  const prevYear = mon === 1 ? year - 1 : year;
+  return `${prevYear}-${String(prevMon).padStart(2, "0")}`;
+}
+
+function getMonthLabel(month: string, language: string): string {
+  const [year, mon] = month.split("-").map(Number);
+  const d = new Date(year, mon - 1, 1);
+  return d.toLocaleDateString(language === "bn" ? "bn-BD" : "en-US", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
 function generateMonthOptions(language: string) {
   const options: { value: string; label: string }[] = [];
   const now = new Date();
@@ -62,6 +84,11 @@ function generateMonthOptions(language: string) {
   return options;
 }
 
+function getPercentChange(current: number, previous: number): number | null {
+  if (previous === 0) return current === 0 ? 0 : null;
+  return ((current - previous) / previous) * 100;
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function DashboardPage() {
@@ -71,6 +98,8 @@ export default function DashboardPage() {
 
   const [monthlyExpense, setMonthlyExpense] = useState(0);
   const [monthlyIncome, setMonthlyIncome] = useState(0);
+  const [prevMonthlyExpense, setPrevMonthlyExpense] = useState(0);
+  const [prevMonthlyIncome, setPrevMonthlyIncome] = useState(0);
   const [memberTotals, setMemberTotals] = useState<MemberTotal[]>([]);
   const [recentTransactions, setRecentTransactions] = useState<
     RecentTransaction[]
@@ -81,6 +110,17 @@ export default function DashboardPage() {
   const monthOptions = generateMonthOptions(language);
   const selectedMonthLabel =
     monthOptions.find((m) => m.value === selectedMonth)?.label ?? "";
+  const previousMonthLabel = getMonthLabel(
+    getPreviousMonth(selectedMonth),
+    language
+  );
+
+  const monthlyProfit = monthlyIncome - monthlyExpense;
+  const prevMonthlyProfit = prevMonthlyIncome - prevMonthlyExpense;
+
+  const profitChange = getPercentChange(monthlyProfit, prevMonthlyProfit);
+  const incomeChange = getPercentChange(monthlyIncome, prevMonthlyIncome);
+  const expenseChange = getPercentChange(monthlyExpense, prevMonthlyExpense);
 
   // Re-fetch month-aware data whenever selected month changes
   useEffect(() => {
@@ -124,6 +164,9 @@ export default function DashboardPage() {
     setMonthlyLoading(true);
     try {
       const { startDate, endDate } = getMonthRange(selectedMonth);
+      const previousMonth = getPreviousMonth(selectedMonth);
+      const { startDate: prevStartDate, endDate: prevEndDate } =
+        getMonthRange(previousMonth);
 
       // Monthly expense total
       const { data: expenseData } = await supabase
@@ -146,6 +189,30 @@ export default function DashboardPage() {
         .lt("income_date", endDate);
 
       setMonthlyIncome(incomeData?.reduce((sum, i) => sum + i.amount, 0) ?? 0);
+
+      // Previous month expense total (for % comparison)
+      const { data: prevExpenseData } = await supabase
+        .from("expenses")
+        .select("amount")
+        .eq("is_deleted", false)
+        .gte("expense_date", prevStartDate)
+        .lt("expense_date", prevEndDate);
+
+      setPrevMonthlyExpense(
+        prevExpenseData?.reduce((sum, e) => sum + e.amount, 0) ?? 0
+      );
+
+      // Previous month income total (for % comparison)
+      const { data: prevIncomeData } = await supabase
+        .from("income")
+        .select("amount")
+        .eq("is_deleted", false)
+        .gte("income_date", prevStartDate)
+        .lt("income_date", prevEndDate);
+
+      setPrevMonthlyIncome(
+        prevIncomeData?.reduce((sum, i) => sum + i.amount, 0) ?? 0
+      );
 
       // Member contributions — scoped to selected month
       const { data: memberData } = await supabase
@@ -278,12 +345,12 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6 px-4 pb-28">
       {/* Header + Month Selector */}
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3" font-bold>
         <PageHeader
           title={messages.dashboard.title}
           subtitle={
             userFullName
-              ? `${messages.dashboard.subtitle}, ${userFullName}`
+              ? `${messages.dashboard.subtitle}, ${userFullName} `
               : messages.dashboard.subtitle
           }
         />
@@ -292,7 +359,7 @@ export default function DashboardPage() {
           <select
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
-            className="appearance-none rounded-2xl border bg-white py-2 pr-7 pl-3 text-sm font-semibold text-gray-700 shadow-sm outline-none"
+            className="appearance-none rounded-2xl border bg-white py-2 pr-8 pl-9 text-sm font-semibold text-gray-700 shadow-sm outline-none"
           >
             {monthOptions.map((m) => (
               <option key={m.value} value={m.value}>
@@ -300,6 +367,10 @@ export default function DashboardPage() {
               </option>
             ))}
           </select>
+          <Calendar
+            size={14}
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-500"
+          />
           <ChevronDown
             size={14}
             className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-gray-500"
@@ -307,30 +378,143 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Monthly Expense Card */}
-      <div className="rounded-3xl bg-black p-6 text-white shadow-lg">
-        <p className="text-xs font-semibold tracking-widest uppercase opacity-70">
-          {messages.dashboard.monthlyExpense}
-        </p>
-        <h2 className="mt-3 text-5xl font-bold">
-          ৳ {monthlyExpense.toLocaleString()}
+      {/* Monthly Profit Card */}
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-700 to-blue-900 p-6 text-white shadow-lg">
+        <div className="flex items-start justify-between">
+          <p className="text-xs font-semibold tracking-widest uppercase opacity-70">
+            {messages.dashboard.monthlyProfit}
+          </p>
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20">
+            <Wallet size={20} />
+          </div>
+        </div>
+        <h2 className="mt-0 text-5xl font-bold">
+          ৳ {monthlyProfit.toLocaleString()}
         </h2>
-        <p className="mt-2 text-sm opacity-60">
-          {messages.dashboard.currentMonthExpense}
-        </p>
+
+        {!monthlyLoading && profitChange !== null && (
+          <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
+            {profitChange >= 0 ? (
+              <ArrowUp size={12} className="text-green-300" />
+            ) : (
+              <ArrowDown size={12} className="text-red-300" />
+            )}
+            <span
+              className={`text-xs font-semibold ${
+                profitChange >= 0 ? "text-green-300" : "text-red-300"
+              }`}
+            >
+              {Math.abs(profitChange).toFixed(1)}%
+            </span>
+            <span className="text-xs opacity-70">
+              {messages.common.vs} {previousMonthLabel}
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Monthly Income Card */}
-      <div className="rounded-3xl bg-green-600 p-6 text-white shadow-lg">
-        <p className="text-xs font-semibold tracking-widest uppercase opacity-70">
-          {messages.dashboard.monthlyIncome}
-        </p>
+      {/* 
+      //Monthly Profit Card --- Newer Version Not implemented Yet.(Minus Amount will not show)
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-700 to-blue-900 p-6 text-white shadow-lg">
+        <div className="flex items-start justify-between">
+          <p className="text-xs font-semibold tracking-widest uppercase opacity-70">
+            {messages.dashboard.monthlyProfit}
+          </p>
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20">
+            <Wallet size={20} />
+          </div>
+        </div>
         <h2 className="mt-3 text-5xl font-bold">
-          ৳ {monthlyIncome.toLocaleString()}
+          ৳ {Math.max(monthlyProfit, 0).toLocaleString()}
         </h2>
         <p className="mt-2 text-sm opacity-60">
-          {messages.dashboard.currentMonthIncome}
+          {messages.dashboard.incomeMinusExpense}
         </p>
+
+        {!monthlyLoading && profitChange !== null && (
+          <div className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1">
+            {profitChange >= 0 ? (
+              <ArrowUp size={12} className="text-green-300" />
+            ) : (
+              <ArrowDown size={12} className="text-red-300" />
+            )}
+            <span
+              className={`text-xs font-semibold ${
+                profitChange >= 0 ? "text-green-300" : "text-red-300"
+              }`}
+            >
+              {Math.abs(profitChange).toFixed(1)}%
+            </span>
+            <span className="text-xs opacity-70">vs {previousMonthLabel}</span>
+          </div>
+        )}
+      </div> */}
+
+      {/* Monthly Income + Expense Cards */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="rounded-3xl bg-green-600 p-5 text-white shadow-lg">
+          <p className="text-xs font-semibold tracking-widest uppercase opacity-70">
+            {messages.dashboard.monthlyIncome}
+          </p>
+          <h2 className="mt-3 text-3xl font-bold">
+            ৳ {monthlyIncome.toLocaleString()}
+          </h2>
+          <p className="mt-2 text-sm opacity-60">
+            {messages.dashboard.currentMonthIncome}
+          </p>
+
+          {!monthlyLoading && incomeChange !== null && (
+            <div className="mt-4 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1">
+              {incomeChange >= 0 ? (
+                <ArrowUp size={11} className="text-green-200" />
+              ) : (
+                <ArrowDown size={11} className="text-red-300" />
+              )}
+              <span
+                className={`text-xs font-semibold ${
+                  incomeChange >= 0 ? "text-green-100" : "text-red-300"
+                }`}
+              >
+                {Math.abs(incomeChange).toFixed(1)}%
+              </span>
+              <span className="text-[11px] opacity-70">
+                vs {previousMonthLabel}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-3xl bg-black p-5 text-white shadow-lg">
+          <p className="text-xs font-semibold tracking-widest uppercase opacity-70">
+            {messages.dashboard.monthlyExpense}
+          </p>
+          <h2 className="mt-3 text-3xl font-bold">
+            ৳ {monthlyExpense.toLocaleString()}
+          </h2>
+          <p className="mt-2 text-sm opacity-60">
+            {messages.dashboard.currentMonthExpense}
+          </p>
+
+          {!monthlyLoading && expenseChange !== null && (
+            <div className="mt-4 inline-flex items-center gap-1 rounded-full bg-white/15 px-2.5 py-1">
+              {expenseChange >= 0 ? (
+                <ArrowUp size={11} className="text-red-300" />
+              ) : (
+                <ArrowDown size={11} className="text-green-300" />
+              )}
+              <span
+                className={`text-xs font-semibold ${
+                  expenseChange >= 0 ? "text-red-300" : "text-green-300"
+                }`}
+              >
+                {Math.abs(expenseChange).toFixed(1)}%
+              </span>
+              <span className="text-[11px] opacity-70">
+                vs {previousMonthLabel}
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Member Contributions */}
